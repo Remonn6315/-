@@ -1,0 +1,20 @@
+{
+  "core_principles": "Unity/Godot/UE5 自律開発司令部。最高効率のローカル開発ハブ。",
+  "target_engine": "Godot",
+  "models": {
+    "architect": "llama3.1:70b",
+    "coder": "qwen3-next:80b",
+    "refiner": "deepseek-r1:32b",
+    "chat_light": "qwen2.5-coder:14b"
+  },
+  "paths": {
+    "code_export": "C:/AI_Dev/Source",
+    "asset_export": "C:/AI_Dev/Assets"
+  },
+  "sd_settings": {
+    "api_url": "http://127.0.0.1:7860",
+    "steps": 25,
+    "width": 1024,
+    "height": 1024
+  }
+}

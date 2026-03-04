@@ -1,0 +1,9 @@
+{
+    "screen_size": [
+        1280,
+        720
+    ],
+    "frame_rate": 30,
+    "fullscreen": true,
+    "ai_os_integration": false
+}
