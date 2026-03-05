@@ -44,7 +44,7 @@ defaults = {
     "messages":          [],
     "chat_messages":     [],
     "improve_messages":  [],
-    "auto_write":        False,
+    "auto_write":        True,
     "max_cycles":        3,
     "last_log":          [],
     "monitor_result":    None,
@@ -537,7 +537,7 @@ st.sidebar.info(
 with st.sidebar.expander("🛠 実行・保存設定", expanded=True):
     app_mode = st.selectbox("稼働モード", ["Code特化", "画像生成", "音楽生成", "動画生成", "Game作成"])
     st.session_state.auto_write = st.checkbox(
-        "自動保存 + Git Commit", value=st.session_state.auto_write
+        "自動保存 + Git Commit（推奨: ON）", value=st.session_state.auto_write
     )
     st.session_state.max_cycles = st.slider(
         "最大修正サイクル数", 1, 5, st.session_state.max_cycles
@@ -1051,8 +1051,48 @@ with tab_main:
             st.session_state.messages.append({"role": "assistant", "content": result})
             st.rerun()
         if st.session_state.messages:
-            if st.button("🗑 会話クリア", key="clear_main"):
-                st.session_state.messages = []; st.rerun()
+            btn_col1, btn_col2 = st.columns(2)
+            with btn_col1:
+                if st.button("🗑 会話クリア", key="clear_main", use_container_width=True):
+                    st.session_state.messages = []; st.rerun()
+            with btn_col2:
+                # 💾 保存ボタン：最後の生成コードをファイルに書き出す
+                save_label = "💾 保存する" if not st.session_state.auto_write else "✅ 自動保存ON"
+                if st.button(save_label, key="manual_save", use_container_width=True,
+                             type="primary" if not st.session_state.auto_write else "secondary"):
+                    if st.session_state.auto_write:
+                        st.info("自動保存がONのため、生成と同時に保存されています。\nサイドバーの「保存先パス」を確認してください。")
+                    elif st.session_state.last_result:
+                        # 手動保存: 最後の結果からコードブロックを抽出して保存
+                        import re as _re
+                        code_blocks = _re.findall(
+                            r"```(?:python|gdscript|javascript|typescript|csharp|gd)?\n(.*?)```",
+                            st.session_state.last_result, _re.DOTALL
+                        )
+                        if code_blocks:
+                            saved_files = []
+                            # ファイル名を結果から抽出（[OK] xxx.py パターン）
+                            file_names = _re.findall(r"\[OK\]\s+([\w./\\-]+\.\w+)", st.session_state.last_result)
+                            for i, code in enumerate(code_blocks):
+                                fname = file_names[i] if i < len(file_names) else f"output_{i+1}.py"
+                                fpath = os.path.join(st.session_state.target_path, os.path.basename(fname))
+                                try:
+                                    os.makedirs(os.path.dirname(fpath) if os.path.dirname(fpath) else st.session_state.target_path, exist_ok=True)
+                                    with open(fpath, "w", encoding="utf-8") as f:
+                                        f.write(code)
+                                    saved_files.append(fpath)
+                                except Exception as e:
+                                    st.error(f"保存失敗: {fname} → {e}")
+                            if saved_files:
+                                st.success(f"✅ {len(saved_files)}ファイルを保存しました:\n" + "\n".join(f"  📄 {p}" for p in saved_files))
+                                st.session_state["last_saved_files"] = saved_files
+                        else:
+                            st.warning("保存するコードが見つかりませんでした。\n先にコードを生成してください。")
+                    else:
+                        st.warning("まず指示を入力してコードを生成してください。")
+
+            # 保存先パスの表示（常に見える）
+            st.caption(f"📂 保存先: `{st.session_state.target_path}` | 自動保存: {'✅ ON' if st.session_state.auto_write else '❌ OFF（要手動保存）'}")
 
     with col_right:
         right_mode = st.radio("右パネル", ["🧠 思考ロジック", "💡 改善提案", "📤 生成出力"],
