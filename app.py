@@ -65,7 +65,17 @@ defaults = {
     "github_repo_url":   "",
     # ── ゲーム素材マップ ──
     "asset_map":         None,
+    "target_engine":     "auto",
+    "genre_override":    None,
+    "engine_override":   None,
+    "godot_version":     "4",
     "asset_folder":      "",
+    # ── 戦略会議室 新UI ──
+    "pending_suggestions": [],   # チェックボックス付き改善提案リスト
+    "adopted_suggestions": [],   # 導入済み提案の記録
+    "quality_check_result": "",  # 品質チェック結果
+    "build_log":           [],   # 何を作ったかのログ
+    "crash_check_result":  "",   # バグ/クラッシュチェック結果
     # AIVtuber設定
     "vt_persona":        "あなたはVRストリーマーのAIVtuberです。明るく親しみやすい口調で短めに答えてください。",
     "vt_speaker_id":     1,
@@ -566,7 +576,108 @@ with st.sidebar.expander("🛠 実行・保存設定", expanded=True):
     save_path = st.session_state.target_path
     st.code(save_path, wrap_lines=True)
 
-with st.sidebar.expander("🤖 AIモデル構成", expanded=True):
+# ── ⑬ エンジン・ジャンル設定 ─────────────────────────────
+with st.sidebar.expander("🎮 エンジン・ジャンル設定", expanded=False):
+    st.caption("ゲーム開発時のターゲットエンジンとジャンルを設定します。\n「自動判定」にするとプロジェクトフォルダから自動で検出します。")
+
+    _engine_options = {
+        "🔍 自動判定":          "auto",
+        "🟣 Godot 4（推奨）":  "godot",
+        "🐍 Pygame（2D即動作）":"pygame",
+        "🎯 Unreal Engine":     "unreal",
+        "🔵 Unity":             "unity",
+        "🌐 Three.js（Web3D）": "threejs",
+    }
+    _selected_engine_label = st.selectbox(
+        "ターゲットエンジン",
+        list(_engine_options.keys()),
+        index=0,
+        key="engine_selector",
+    )
+    selected_engine = _engine_options[_selected_engine_label]
+    if selected_engine != "auto":
+        st.session_state["target_engine"] = selected_engine
+        # engine.py の SPEED_MODE に反映
+        try:
+            import engine as _eng
+            # engine_adapter でエンジンを固定（自動判定をオーバーライド）
+            st.session_state["engine_override"] = selected_engine
+        except Exception:
+            pass
+    else:
+        st.session_state.pop("engine_override", None)
+        st.caption("💡 保存先フォルダのファイルからエンジンを自動検出します")
+
+    st.divider()
+
+    _genre_options = {
+        "🔍 自動判定":                    "auto",
+        "⚔️ 2Dアクション・プラットフォーマー": "2daction",
+        "🎲 ローグライク":                 "roguelike",
+        "🏙️ シミュレーション（経営・都市）": "simulation",
+        "🗼 タワーディフェンス":            "towerdefense",
+        "🗡️ 3DアクションRPG":             "3daction",
+    }
+    _selected_genre_label = st.selectbox(
+        "ゲームジャンル",
+        list(_genre_options.keys()),
+        index=0,
+        key="genre_selector",
+    )
+    selected_genre = _genre_options[_selected_genre_label]
+    if selected_genre != "auto":
+        st.session_state["genre_override"] = selected_genre
+    else:
+        st.session_state.pop("genre_override", None)
+        st.caption("💡 指示文からジャンルを自動判定します")
+
+    # Godot選択時の追加オプション
+    if selected_engine == "godot":
+        st.divider()
+        godot_ver = st.radio("Godotバージョン", ["4.x（推奨）", "3.x"], horizontal=True)
+        st.session_state["godot_version"] = "4" if "4" in godot_ver else "3"
+        st.caption("✅ .tscn シーンファイルをAIが直接生成できます")
+
+    # UE選択時の注意
+    if selected_engine == "unreal":
+        st.warning(
+            "⚠️ UE対応について\n"
+            "C++コード(.h/.cpp)の生成は可能です。\n"
+            "Blueprintノード(.uasset)はバイナリ形式のため\n"
+            "AIによる直接操作はできません。"
+        )
+
+    # ジャンル情報表示
+    if selected_genre != "auto":
+        try:
+            from genre_templates import get_genre_architecture
+            arch = get_genre_architecture(selected_genre, selected_engine if selected_engine != "auto" else "godot")
+            with st.expander(f"📋 {arch['name']} システム構成", expanded=False):
+                for sys in arch["core_systems"]:
+                    st.caption(f"• {sys}")
+        except Exception:
+            pass
+
+    # 速度モード
+    st.divider()
+    st.caption("⚡ 生成速度モード")
+    speed_mode = st.radio(
+        "速度モード",
+        ["normal（標準）", "fast（高速・検索スキップ）", "quality（最高品質）"],
+        index=0,
+        horizontal=False,
+        label_visibility="collapsed",
+        key="speed_mode_radio",
+    )
+    try:
+        import engine as _eng
+        _eng.SPEED_MODE = speed_mode.split("（")[0]
+    except Exception:
+        pass
+    if "fast" in speed_mode:
+        st.caption("⚡ ネット検索・Branching をスキップ → 大幅に速くなります")
+
+
     st.caption("各エージェントが使用するモデルを変更できます。\n※ チャットモデルは「会話」タブで変更してください。")
     model_options = [
         "qwen3-next:80b", "qwen2.5-coder:32b", "qwen2.5-coder:14b",
@@ -1022,24 +1133,198 @@ with tab_sogo:
                 st.info("戦略会議室でコードを生成すると、ここに表示されます。")
 
 # ============================================================
-# TAB 1: 💬 戦略会議室
+# ============================================================
+# TAB 1: 💬 戦略会議室（新レイアウト v2.0）
+# ─────────────────────────────────────────────
+#  左列: ① 主軸表示  ② 改善提案チェックリスト  ③ 品質チェック
+#  中央: 会話（メイン）
+#  右列: ① 生成ログ  ② バグ/クラッシュ確認  ③ 改善提案生成
 # ============================================================
 with tab_main:
-    col_left, col_right = st.columns([5, 4], gap="medium")
+    col_left, col_center, col_right = st.columns([3, 5, 4], gap="small")
+
+    # ═══════════════════════════════════════════════
+    # 左列
+    # ═══════════════════════════════════════════════
     with col_left:
-        with st.expander("📍 現在のプロジェクト主軸", expanded=False):
-            st.info(st.session_state.project_anchor)
-        chat_container = st.container(height=500)
+
+        # ── ① プロジェクト主軸 ──────────────────────
+        st.markdown("#### ⚓ ゲーム主軸")
+        anchor_box = st.container(border=True)
+        with anchor_box:
+            st.caption("AIがこの主軸に従いながら作ります")
+            new_anchor = st.text_area(
+                "主軸",
+                value=st.session_state.project_anchor,
+                height=120,
+                label_visibility="collapsed",
+                key="main_anchor_edit",
+                placeholder="例: ローグライクRPG。プレイヤーは一歩の重みを感じる重厚な操作感。"
+            )
+            if new_anchor != st.session_state.project_anchor:
+                if st.button("✅ 主軸を更新", use_container_width=True, key="anchor_update_main"):
+                    st.session_state.project_anchor = new_anchor
+                    st.success("主軸を更新しました")
+                    st.rerun()
+
+        st.divider()
+
+        # ── ② 改善提案チェックリスト ──────────────────
+        st.markdown("#### 💡 AIからの改善提案")
+        st.caption("チェックして「導入」ボタンで即実行")
+
+        # 新しい提案を生成するボタン
+        if st.button("🔄 提案を更新", use_container_width=True, key="gen_suggestions_main"):
+            if st.session_state.last_result:
+                with st.spinner("提案を生成中..."):
+                    try:
+                        raw = chat_with_persona(
+                            message=(
+                                "以下のコードに対して、導入すべき改善案を正確に5個、"
+                                "番号付きで1行ずつ出力してください。\n"
+                                "形式: 1. [提案内容（30文字以内）]\n\n"
+                                f"{st.session_state.last_result[:2000]}"
+                            ),
+                            persona="厳格なアーキテクト。箇条書きのみ。説明不要。",
+                            anchor=st.session_state.project_anchor
+                        )
+                        import re as _re
+                        items = _re.findall(r"\d+\.\s*(.+)", raw)
+                        if items:
+                            st.session_state.pending_suggestions = [
+                                {"text": t.strip(), "checked": False}
+                                for t in items[:5]
+                            ]
+                            st.rerun()
+                    except Exception as e:
+                        st.error(f"提案生成失敗: {e}")
+            else:
+                st.warning("先にコードを生成してください")
+
+        # チェックボックス表示
+        if st.session_state.pending_suggestions:
+            updated = False
+            for i, item in enumerate(st.session_state.pending_suggestions):
+                checked = st.checkbox(
+                    item["text"], value=item["checked"],
+                    key=f"suggest_chk_{i}"
+                )
+                if checked != item["checked"]:
+                    st.session_state.pending_suggestions[i]["checked"] = checked
+                    updated = True
+
+            # 選択した提案を一括導入
+            selected = [s for s in st.session_state.pending_suggestions if s["checked"]]
+            if selected:
+                if st.button(
+                    f"⚡ 選択した{len(selected)}件を導入",
+                    use_container_width=True,
+                    type="primary",
+                    key="adopt_selected"
+                ):
+                    adopt_goal = "【選択した改善提案を導入】\n" + "\n".join(
+                        f"- {s['text']}" for s in selected
+                    )
+                    with st.spinner("導入中..."):
+                        fix = autonomous_dev(
+                            goal=adopt_goal,
+                            auto_write=st.session_state.auto_write,
+                            save_path=st.session_state.target_path,
+                            anchor=st.session_state.project_anchor,
+                            max_cycles=2
+                        )
+                    # 導入済みに記録
+                    st.session_state.adopted_suggestions.extend(
+                        [s["text"] for s in selected]
+                    )
+                    # 導入済みを除去
+                    st.session_state.pending_suggestions = [
+                        s for s in st.session_state.pending_suggestions
+                        if not s["checked"]
+                    ]
+                    st.session_state.messages.append({"role": "assistant", "content": fix})
+                    st.session_state.last_result = fix
+                    st.rerun()
+        else:
+            st.info("「提案を更新」でAIが改善案を出します")
+
+        # 導入済み記録
+        if st.session_state.adopted_suggestions:
+            with st.expander(f"✅ 導入済み ({len(st.session_state.adopted_suggestions)}件)", expanded=False):
+                for s in st.session_state.adopted_suggestions[-5:]:
+                    st.caption(f"✅ {s}")
+
+        st.divider()
+
+        # ── ③ 品質チェック ───────────────────────────
+        st.markdown("#### 🎯 最終品質チェック")
+        st.caption("AIがゲームとして面白いか判断します")
+        if st.button("🎮 品質チェック実行", use_container_width=True, key="quality_check_main"):
+            if st.session_state.last_result:
+                with st.spinner("品質を評価中..."):
+                    try:
+                        qc = chat_with_persona(
+                            message=(
+                                "以下のゲームコードを評価してください。\n"
+                                "【主軸】" + st.session_state.project_anchor + "\n\n"
+                                "【コード】\n" + st.session_state.last_result[:2000] + "\n\n"
+                                "以下の形式で回答:\n"
+                                "面白さ: ★★★☆☆（5段階）\n"
+                                "主軸との一致: ★★★★☆\n"
+                                "バグリスク: 低/中/高\n"
+                                "一言評価: [30文字]\n"
+                                "改善余地: あり/なし"
+                            ),
+                            persona="厳格なゲームディレクター。簡潔に評価のみ出力。",
+                            anchor=st.session_state.project_anchor
+                        )
+                        st.session_state.quality_check_result = qc
+                        # 改善余地ありなら自動で提案を更新フラグ
+                        if "改善余地: あり" in qc or "あり" in qc:
+                            st.session_state["quality_needs_improve"] = True
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"品質チェック失敗: {e}")
+            else:
+                st.warning("先にコードを生成してください")
+
+        if st.session_state.quality_check_result:
+            qr = st.session_state.quality_check_result
+            # 色分け表示
+            if "高" in qr and "バグリスク" in qr:
+                st.error(qr)
+            elif "改善余地: あり" in qr:
+                st.warning(qr)
+                st.caption("→ 左の「提案を更新」で改善案を出して再実行")
+            else:
+                st.success(qr)
+
+    # ═══════════════════════════════════════════════
+    # 中央列: 会話メイン
+    # ═══════════════════════════════════════════════
+    with col_center:
+        st.markdown(f'<div class="bw-panel-title">🗣️ 開発チャット — {st.session_state.model_coder}</div>',
+                    unsafe_allow_html=True)
+
+        # 会話履歴
+        chat_container = st.container(height=480)
         with chat_container:
             for msg in st.session_state.messages:
                 with st.chat_message(msg["role"]):
                     st.markdown(msg["content"])
-        if prompt := st.chat_input(f"【{app_mode}】 指示を入力してください"):
+
+        # 入力
+        if prompt := st.chat_input("指示を入力（例: プレイヤーのジャンプを実装して）"):
             st.session_state.messages.append({"role": "user", "content": prompt})
-            full_prompt = f"【プロジェクト主軸】\n{st.session_state.project_anchor}\n\n【稼働モード】\n{app_mode}\n\n【指示】\n{prompt}"
-            with st.spinner(f"🔄 思考中... (最大{st.session_state.max_cycles}サイクル)"):
+            full_prompt = (
+                f"【プロジェクト主軸】\n{st.session_state.project_anchor}\n\n"
+                f"【稼働モード】\n{app_mode}\n\n"
+                f"【指示】\n{prompt}"
+            )
+            with st.spinner(f"🔄 生成中... (最大{st.session_state.max_cycles}サイクル)"):
                 result = autonomous_dev(
-                    goal=full_prompt, auto_write=st.session_state.auto_write,
+                    goal=full_prompt,
+                    auto_write=st.session_state.auto_write,
                     save_path=st.session_state.target_path,
                     anchor=st.session_state.project_anchor,
                     history=st.session_state.messages[-10:],
@@ -1048,92 +1333,224 @@ with tab_main:
                 st.session_state.last_result  = result
                 st.session_state.last_log     = get_execution_log()
                 st.session_state.thinking_log = get_execution_log()
+                # 生成ログに追加
+                import re as _re2
+                built_files = _re2.findall(r"\[OK\]\s+([\w./\\-]+\.\w+)", result)
+                if built_files:
+                    st.session_state.build_log.extend(built_files)
+                    st.session_state.build_log = st.session_state.build_log[-30:]  # 直近30件
+
             st.session_state.messages.append({"role": "assistant", "content": result})
+            # 品質チェックフラグをリセット
+            st.session_state.quality_check_result = ""
+            st.session_state["quality_needs_improve"] = False
             st.rerun()
-        if st.session_state.messages:
-            btn_col1, btn_col2 = st.columns(2)
-            with btn_col1:
-                if st.button("🗑 会話クリア", key="clear_main", use_container_width=True):
-                    st.session_state.messages = []; st.rerun()
-            with btn_col2:
-                # 💾 保存ボタン：最後の生成コードをファイルに書き出す
-                save_label = "💾 保存する" if not st.session_state.auto_write else "✅ 自動保存ON"
-                if st.button(save_label, key="manual_save", use_container_width=True,
-                             type="primary" if not st.session_state.auto_write else "secondary"):
-                    if st.session_state.auto_write:
-                        st.info("自動保存がONのため、生成と同時に保存されています。\nサイドバーの「保存先パス」を確認してください。")
-                    elif st.session_state.last_result:
-                        # 手動保存: 最後の結果からコードブロックを抽出して保存
-                        import re as _re
-                        code_blocks = _re.findall(
-                            r"```(?:python|gdscript|javascript|typescript|csharp|gd)?\n(.*?)```",
-                            st.session_state.last_result, _re.DOTALL
-                        )
-                        if code_blocks:
-                            saved_files = []
-                            # ファイル名を結果から抽出（[OK] xxx.py パターン）
-                            file_names = _re.findall(r"\[OK\]\s+([\w./\\-]+\.\w+)", st.session_state.last_result)
-                            for i, code in enumerate(code_blocks):
-                                fname = file_names[i] if i < len(file_names) else f"output_{i+1}.py"
-                                fpath = os.path.join(st.session_state.target_path, os.path.basename(fname))
+
+        # ボタン行
+        btn1, btn2, btn3 = st.columns(3)
+        with btn1:
+            if st.button("🗑 会話クリア", use_container_width=True, key="clear_main"):
+                st.session_state.messages = []
+                st.rerun()
+        with btn2:
+            # 💾 保存
+            slbl = "💾 保存する" if not st.session_state.auto_write else "✅ 自動保存ON"
+            if st.button(slbl, use_container_width=True, key="manual_save",
+                         type="primary" if not st.session_state.auto_write else "secondary"):
+                if st.session_state.auto_write:
+                    st.info(f"自動保存ON — 保存先: {st.session_state.target_path}")
+                elif st.session_state.last_result:
+                    code_blocks = _re2.findall(
+                        r"```(?:python|gdscript|javascript|csharp|gd)?\n(.*?)```",
+                        st.session_state.last_result, _re2.DOTALL
+                    )
+                    file_names = _re2.findall(
+                        r"\[OK\]\s+([\w./\\-]+\.\w+)", st.session_state.last_result
+                    )
+                    saved = []
+                    for i, code in enumerate(code_blocks):
+                        fn = file_names[i] if i < len(file_names) else f"output_{i+1}.py"
+                        fp = os.path.join(st.session_state.target_path, os.path.basename(fn))
+                        try:
+                            with open(fp, "w", encoding="utf-8") as f:
+                                f.write(code)
+                            saved.append(fp)
+                        except Exception as e:
+                            st.error(f"保存失敗: {e}")
+                    if saved:
+                        st.success(f"✅ {len(saved)}件保存")
+                else:
+                    st.warning("先にコードを生成してください")
+        with btn3:
+            # ▶️ 再生ボタン（生成コードを実行）
+            if st.button("▶️ 実行", use_container_width=True, key="run_code_main", type="primary"):
+                if st.session_state.last_result:
+                    code_blocks_run = _re2.findall(
+                        r"```python\n(.*?)```",
+                        st.session_state.last_result, _re2.DOTALL
+                    )
+                    if code_blocks_run:
+                        run_code = code_blocks_run[0]
+                        with st.spinner("実行中..."):
+                            try:
+                                from sandbox import run_code as sandbox_run
+                                ok, out, err = sandbox_run(run_code)
+                                if ok:
+                                    st.success(f"✅ 実行成功\n{out[:300]}")
+                                else:
+                                    st.error(f"❌ エラー\n{err[:300]}")
+                                    # エラーをcrash_check_resultに記録
+                                    st.session_state.crash_check_result = err
+                            except Exception as e:
+                                # sandboxがない場合はsubprocessで実行
+                                import subprocess, tempfile
+                                with tempfile.NamedTemporaryFile(suffix=".py", delete=False, mode="w") as tf:
+                                    tf.write(run_code); tfname = tf.name
                                 try:
-                                    os.makedirs(os.path.dirname(fpath) if os.path.dirname(fpath) else st.session_state.target_path, exist_ok=True)
-                                    with open(fpath, "w", encoding="utf-8") as f:
-                                        f.write(code)
-                                    saved_files.append(fpath)
-                                except Exception as e:
-                                    st.error(f"保存失敗: {fname} → {e}")
-                            if saved_files:
-                                st.success(f"✅ {len(saved_files)}ファイルを保存しました:\n" + "\n".join(f"  📄 {p}" for p in saved_files))
-                                st.session_state["last_saved_files"] = saved_files
-                        else:
-                            st.warning("保存するコードが見つかりませんでした。\n先にコードを生成してください。")
+                                    r = subprocess.run(
+                                        ["python", tfname],
+                                        capture_output=True, text=True, timeout=10
+                                    )
+                                    if r.returncode == 0:
+                                        st.success(f"✅ 実行OK\n{r.stdout[:300]}")
+                                    else:
+                                        st.error(f"❌ エラー\n{r.stderr[:300]}")
+                                        st.session_state.crash_check_result = r.stderr
+                                except subprocess.TimeoutExpired:
+                                    st.warning("⏱ タイムアウト（正常な場合も多い）")
+                                finally:
+                                    import os as _os; _os.unlink(tfname)
                     else:
-                        st.warning("まず指示を入力してコードを生成してください。")
+                        st.info("Pythonコードが見つかりません（Godot/UEは直接実行不可）")
+                else:
+                    st.warning("先にコードを生成してください")
 
-            # 保存先パスの表示（常に見える）
-            st.caption(f"📂 保存先: `{st.session_state.target_path}` | 自動保存: {'✅ ON' if st.session_state.auto_write else '❌ OFF（要手動保存）'}")
+        st.caption(f"📂 保存先: `{st.session_state.target_path}` | 自動保存: {'✅ ON' if st.session_state.auto_write else '❌ OFF'}")
 
+    # ═══════════════════════════════════════════════
+    # 右列
+    # ═══════════════════════════════════════════════
     with col_right:
-        right_mode = st.radio("右パネル", ["🧠 思考ロジック", "💡 改善提案", "📤 生成出力"],
-                              horizontal=True, label_visibility="collapsed")
-        if right_mode == "🧠 思考ロジック":
-            st.markdown(f'<div class="bw-panel-title">🧠 AI思考ロジック・学習ログ</div>', unsafe_allow_html=True)
-            if st.session_state.thinking_log:
-                st.code("\n".join(st.session_state.thinking_log), language="text")
+
+        # ── ① 生成ログ ───────────────────────────────
+        st.markdown("#### 📋 生成ログ")
+        log_box = st.container(height=160, border=True)
+        with log_box:
+            if st.session_state.build_log:
+                for fn in reversed(st.session_state.build_log[-8:]):
+                    st.caption(f"📄 {fn}")
+            elif st.session_state.thinking_log:
+                for line in st.session_state.thinking_log[-6:]:
+                    st.caption(line)
             else:
-                st.info("指示を送ると、AIの思考ログがここに表示されます。")
-        elif right_mode == "💡 改善提案":
-            st.markdown(f'<div class="bw-panel-title">💡 改善提案</div>', unsafe_allow_html=True)
+                st.caption("生成すると何を作ったかここに表示されます")
+
+        st.divider()
+
+        # ── ② バグ/クラッシュ確認 ─────────────────────
+        st.markdown("#### 🔍 バグ・クラッシュ確認")
+        if st.button("🐛 バグスキャン", use_container_width=True, key="bug_scan_main"):
             if st.session_state.last_result:
-                if st.button("🔄 改善提案を生成", use_container_width=True):
-                    with st.spinner("生成中..."):
-                        suggestion = chat_with_persona(
-                            message=f"以下に対して改善提案を3〜5点:\n\n{st.session_state.last_result[:3000]}",
-                            persona="厳格なアーキテクト。箇条書きで的確に。",
+                with st.spinner("スキャン中..."):
+                    try:
+                        crash_check = chat_with_persona(
+                            message=(
+                                "以下のコードを静的解析し、バグ・クラッシュ要因を指摘してください。\n"
+                                "形式:\n"
+                                "リスクレベル: 低/中/高\n"
+                                "問題点: [箇条書き、最大3点]\n"
+                                "修正提案: [各問題に1行]\n\n"
+                                f"コード:\n{st.session_state.last_result[:2500]}"
+                            ),
+                            persona="バグハンター。簡潔に問題点のみ報告。",
                             anchor=st.session_state.project_anchor
                         )
-                        st.session_state.last_suggestion = suggestion
-                if st.session_state.last_suggestion:
-                    st.markdown(st.session_state.last_suggestion)
-                    if st.button("⚡ この改善を実行", use_container_width=True, type="primary"):
-                        with st.spinner("実行中..."):
-                            fix = autonomous_dev(
-                                goal=f"【改善提案を反映】\n{st.session_state.last_suggestion}",
-                                auto_write=st.session_state.auto_write,
-                                save_path=st.session_state.target_path,
-                                anchor=st.session_state.project_anchor, max_cycles=2
-                            )
-                        st.session_state.messages.append({"role": "assistant", "content": fix})
+                        st.session_state.crash_check_result = crash_check
                         st.rerun()
+                    except Exception as e:
+                        st.error(f"スキャン失敗: {e}")
             else:
-                st.info("コードを生成してから改善提案を受け取れます。")
+                st.warning("コードを生成してください")
+
+        if st.session_state.crash_check_result:
+            cr = st.session_state.crash_check_result
+            crash_box = st.container(height=160, border=True)
+            with crash_box:
+                if "高" in cr and "リスクレベル" in cr:
+                    st.error(cr[:400])
+                elif "中" in cr and "リスクレベル" in cr:
+                    st.warning(cr[:400])
+                else:
+                    st.success(cr[:400])
+
+            # バグがあれば自動修正ボタン
+            if "問題点" in cr and ("高" in cr or "中" in cr):
+                if st.button("🔧 バグを自動修正", use_container_width=True,
+                             key="auto_fix_bug", type="primary"):
+                    with st.spinner("修正中..."):
+                        fix = autonomous_dev(
+                            goal=f"【バグ修正】以下の問題を修正せよ:\n{cr}\n\n対象:\n{st.session_state.last_result[:2000]}",
+                            auto_write=st.session_state.auto_write,
+                            save_path=st.session_state.target_path,
+                            anchor=st.session_state.project_anchor,
+                            max_cycles=2
+                        )
+                    st.session_state.messages.append({"role": "assistant", "content": fix})
+                    st.session_state.last_result = fix
+                    st.session_state.crash_check_result = ""
+                    st.rerun()
         else:
-            st.markdown(f'<div class="bw-panel-title">📤 最新の生成出力</div>', unsafe_allow_html=True)
+            st.info("バグスキャンをクリックすると結果がここに出ます")
+
+        st.divider()
+
+        # ── ③ 改善提案（詳細） ────────────────────────
+        st.markdown("#### 🚀 改善提案・詳細")
+        if st.button("💡 詳細提案を生成", use_container_width=True, key="detail_suggest_main"):
             if st.session_state.last_result:
-                st.markdown(st.session_state.last_result)
+                with st.spinner("生成中..."):
+                    suggestion = chat_with_persona(
+                        message=(
+                            f"以下のコードに対して改善提案を3点、詳しく説明してください。\n\n"
+                            f"{st.session_state.last_result[:2500]}"
+                        ),
+                        persona="厳格なアーキテクト。箇条書きで的確に。",
+                        anchor=st.session_state.project_anchor
+                    )
+                    st.session_state.last_suggestion = suggestion
+                    # pending_suggestions にも追加
+                    import re as _re3
+                    items = _re3.findall(r"\d+\.\s*(.+?)(?:\n|$)", suggestion)
+                    new_items = [{"text": t.strip()[:60], "checked": False} for t in items[:5]]
+                    existing = [s["text"] for s in st.session_state.pending_suggestions]
+                    for ni in new_items:
+                        if ni["text"] not in existing:
+                            st.session_state.pending_suggestions.append(ni)
+                    st.rerun()
             else:
-                st.info("生成物がここに表示されます。")
+                st.info("コードを生成してから実行してください")
+
+        if st.session_state.last_suggestion:
+            suggest_box = st.container(height=180, border=True)
+            with suggest_box:
+                st.markdown(st.session_state.last_suggestion[:600])
+            if st.button("⚡ この提案を全て実行", use_container_width=True,
+                         key="exec_suggestion_main", type="primary"):
+                with st.spinner("実行中..."):
+                    fix = autonomous_dev(
+                        goal=f"【改善提案を反映】\n{st.session_state.last_suggestion}",
+                        auto_write=st.session_state.auto_write,
+                        save_path=st.session_state.target_path,
+                        anchor=st.session_state.project_anchor,
+                        max_cycles=2
+                    )
+                st.session_state.messages.append({"role": "assistant", "content": fix})
+                st.session_state.last_result = fix
+                st.rerun()
+        else:
+            st.info("提案を生成するとここに詳細が表示されます")
+
+
 
 # ============================================================
 # TAB 2: 📚 知識・学習ログ
