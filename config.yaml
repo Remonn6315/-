@@ -1,0 +1,114 @@
+# ============================================================
+# Blackwell Dev-OS — config.yaml v1.0
+# パッケージ化準備: 全設定をここで一元管理
+# ============================================================
+
+# ── バージョン情報 ──────────────────────────────────────────
+version: "7.4"
+codename: "Blackwell"
+
+# ── AIモデル設定 ─────────────────────────────────────────────
+models:
+  planner:   "qwen3-next:80b"
+  coder:     "qwen2.5-coder:32b"
+  refiner:   "deepseek-r1:32b"
+  optimizer: "qwen2.5-coder:14b"
+  chat:      "qwen3-next:80b"
+  analyzer:  "qwen2.5-coder:14b"   # asset_pipeline / analyzer用軽量モデル
+
+# ── 速度モード ────────────────────────────────────────────────
+# fast:    ネット検索なし・Branchingなし・optimizerスキップ → 最速
+# normal:  デフォルト。スキップ判定付き
+# quality: 全機能ON・最高品質
+speed_mode: "normal"
+
+# ── Sandbox設定 ───────────────────────────────────────────────
+sandbox:
+  enabled:      true
+  timeout_sec:  10
+  max_attempts: 4    # self_heal の最大試行回数
+
+# ── Branching設定 ─────────────────────────────────────────────
+branching:
+  enabled:    true
+  max_paths:  3       # A/B/C の3案
+  # Branchingを発動するキーワード（ここに追加で制御可能）
+  trigger_keywords:
+    - "async"
+    - "非同期"
+    - "database"
+    - "データベース"
+    - "リアルタイム"
+    - "realtime"
+    - "マルチ"
+    - "multi"
+
+# ── 素材パイプライン設定 ──────────────────────────────────────
+asset_pipeline:
+  enabled:        true
+  auto_scan:      true    # プロジェクトフォルダ変更時に自動スキャン
+  cache_enabled:  true    # スキャン結果をキャッシュ（高速化）
+  # 標準タイルサイズ候補（自動判定に使用）
+  tile_size_candidates: [8, 16, 24, 32, 48, 64, 96, 128, 256]
+  # スプライトシートと判定する最小フレーム数
+  min_sheet_frames: 2
+
+# ── ゲーム開発特化設定 ────────────────────────────────────────
+game_dev:
+  default_genre: "2Dアクション・プラットフォーマー"
+  default_engine: "pygame"
+  # プレイヤー物理のデフォルト値（生成コードに使用）
+  player_physics:
+    speed:    5
+    gravity:  0.5
+    jump_pow: -12
+  # アニメーション速度デフォルト
+  anim_speed: 0.12    # 秒/フレーム
+
+# ── パス設定 ─────────────────────────────────────────────────
+paths:
+  default_workspace: "./"
+  code_export:       "C:/AI_Dev/Source"
+  godot_project:     ""
+  asset_cache_file:  ".blackwell_assets.json"
+  graph_cache_file:  ".blackwell_graph.json"
+
+# ── GitHub / インターネット設定 ──────────────────────────────
+internet:
+  enabled:       true
+  auto_search:   true   # タスク判定で自動検索
+  github_token:  ""     # ghp_xxx（ここに書くか、サイドバーで設定）
+  github_repo:   ""
+
+# ── メモリ / RAG設定 ──────────────────────────────────────────
+memory:
+  db_path:        "./blackwell_memory"
+  embedding_model: "all-MiniLM-L6-v2"
+  max_context_k:  5     # RAG検索の取得件数
+  lesson_min_score: 75  # 教訓として記録する最低スコア
+
+# ── UI設定 ───────────────────────────────────────────────────
+ui:
+  theme:      "dark"
+  auto_write: true    # デフォルトで自動保存ON
+  max_cycles: 3
+
+# ── パッケージ化メタ情報（将来のインストーラー用） ────────────
+package:
+  name:        "Blackwell Dev-OS"
+  author:      "しゃけくん"
+  description: "2Dアクション・ゲーム開発特化の自律型AI OS"
+  license:     "Private"
+  # インストール先（将来のexe化時に使用）
+  install_dir: "C:/Program Files/Blackwell"
+  # 必須依存ライブラリ
+  dependencies:
+    - "streamlit>=1.35"
+    - "ollama>=0.2"
+    - "chromadb>=0.5"
+    - "Pillow>=10.0"
+    - "sentence-transformers>=2.7"
+    - "requests>=2.31"
+    - "PyYAML>=6.0"
+    - "numpy>=1.26"
+    - "gitpython>=3.1"

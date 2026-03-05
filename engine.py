@@ -429,49 +429,138 @@ def _build_graph_context(task_desc: str, save_path: str) -> str:
 
 
 # ============================================================
-# ⑫ ゲーム開発コンテキスト（analyzer.py連携）
+# ⑫ ゲーム開発コンテキスト（asset_pipeline.py 物理解析統合版）
 # ============================================================
+
+# 速度モード: "fast"=軽量/検索スキップ, "normal"=通常, "quality"=最高品質
+SPEED_MODE = "normal"
+
+# プロジェクト素材マニフェストキャッシュ（プロセス内）
+_asset_manifest_cache: dict = {}   # {folder_path: AssetManifest}
+
+
+def _should_search_internet(desc: str) -> bool:
+    """
+    速度改善: タスク内容からネット検索が必要かを判定。
+    「標準ライブラリだけで解決できる」「既知パターン」は検索スキップ。
+    """
+    if SPEED_MODE == "fast":
+        return False   # fastモードは全スキップ
+
+    # 明らかに検索不要なキーワード
+    skip_keywords = [
+        "定数", "constants", "設定ファイル", "config", "リファクタ", "refactor",
+        "コメント", "型ヒント", "type hint", "docstring", "フォーマット",
+        "変数名", "rename", "移動", "move file", "削除", "delete",
+        "requirements.txt", "readme", ".gitignore",
+    ]
+    desc_lower = desc.lower()
+    if any(k in desc_lower for k in skip_keywords):
+        _log("⚡ 検索スキップ（不要と判定）: {}".format(desc[:30]))
+        return False
+
+    # 検索が有益なキーワード
+    search_keywords = [
+        "最新", "latest", "バージョン", "version", "インストール", "install",
+        "エラー", "error", "api", "ライブラリ", "library", "仕様", "spec",
+        "pygame", "godot", "unity", "three.js",
+    ]
+    return any(k in desc_lower for k in search_keywords)
+
+
+def _build_internet_context_smart(desc: str, grand_state=None) -> str:
+    """検索判定付きのインターネットコンテキスト生成（速度改善版）"""
+    if not _should_search_internet(desc):
+        try:
+            dt = get_current_datetime()
+            return "\n\n【🕐 現在日時】\n{}".format(dt["datetime_str"])
+        except Exception:
+            return ""
+    return _build_internet_context(desc, grand_state)
+
 
 def _build_game_context(desc: str, save_path: str = "./") -> str:
     """
-    analyzer.pyのゲーム開発RAGと類似プロジェクト参照を取得。
-    ゲーム関連タスクのみ実行。
+    asset_pipeline.py の物理解析を使ってゲーム開発コンテキストを生成。
+    実際に画像を開いてフレーム数・サイズを測定した結果を注入する。
+    Cursorにはできない: 「player_sheet.pngは4x3=12フレーム、各32x48px」が正確に入る。
     """
     game_keywords = [
-        "ゲーム", "game", "player", "プレイヤー", "enemy", "敵", "モンスター",
-        "sprite", "tilemap", "godot", "pygame", "unity", "2d", "3d",
-        "アイテム", "item", "バトル", "battle", "マップ", "map", "stage",
-        "rpg", "アクション", "action", "シューター", "shooter",
+        "ゲーム","game","player","プレイヤー","enemy","敵","モンスター",
+        "sprite","tilemap","godot","pygame","unity","2d","3d",
+        "アイテム","item","バトル","battle","マップ","map","stage",
+        "rpg","アクション","action","シューター","shooter","platform",
+        "ジャンプ","jump","移動","move","アニメーション","animation",
     ]
     desc_lower = desc.lower()
     if not any(k.lower() in desc_lower for k in game_keywords):
         return ""
 
-    _log("🎮 ゲーム開発コンテキスト生成中")
+    _log("🎮 素材パイプライン起動（物理解析）")
     ctx_parts = []
 
+    # ── asset_pipeline による物理解析 ──────────────
+    try:
+        from asset_pipeline import scan_project_assets, build_pygame_context, save_manifest
+
+        # キャッシュ確認（同じフォルダは再スキャンしない）
+        if save_path in _asset_manifest_cache:
+            manifest = _asset_manifest_cache[save_path]
+            _log("🎮 マニフェストキャッシュ使用: {}素材".format(
+                manifest.summary.get("total_sprites",0) +
+                manifest.summary.get("total_tilesets",0)
+            ))
+        elif os.path.isdir(save_path):
+            manifest = scan_project_assets(save_path)
+            _asset_manifest_cache[save_path] = manifest
+            save_manifest(manifest, save_path)
+            total = (manifest.summary.get("total_sprites",0) +
+                     manifest.summary.get("total_tilesets",0) +
+                     manifest.summary.get("total_bgm",0) +
+                     manifest.summary.get("total_se",0))
+            _log("🎮 物理スキャン完了: {}素材 | シート検出: {}個".format(
+                total, manifest.summary.get("sheets_detected",0)))
+        else:
+            manifest = None
+
+        if manifest:
+            pipeline_ctx = build_pygame_context(manifest, desc)
+            if pipeline_ctx:
+                ctx_parts.append(pipeline_ctx)
+
+    except ImportError:
+        _log("WARNING asset_pipeline未インストール → fallback")
+    except Exception as e:
+        _log("WARNING 物理解析失敗: {}".format(e))
+
+    # ── analyzer.py の類似プロジェクト提案（fallback兼用） ──
     try:
         from analyzer import suggest_from_similar, analyze_game_assets_folder, build_game_context_from_assets
-
-        # 類似プロジェクトからの提案
         similar_ctx = suggest_from_similar(desc, "ゲーム")
         if similar_ctx:
             ctx_parts.append(similar_ctx)
 
-        # プロジェクトフォルダの素材マップ
-        asset_map = analyze_game_assets_folder(save_path)
-        if "_summary" in asset_map and asset_map["_summary"]["total_files"] > 0:
-            asset_ctx = build_game_context_from_assets(asset_map, desc)
-            if asset_ctx:
-                ctx_parts.append(asset_ctx)
-                _log("🎮 素材{}個を検出".format(asset_map["_summary"]["total_files"]))
+        # asset_pipeline が使えなかった場合のfallback
+        if not ctx_parts:
+            asset_map = analyze_game_assets_folder(save_path)
+            if "_summary" in asset_map and asset_map["_summary"]["total_files"] > 0:
+                ctx_parts.append(build_game_context_from_assets(asset_map, desc))
 
-    except ImportError:
-        pass
     except Exception as e:
-        _log("WARNING ゲームコンテキスト取得失敗: {}".format(e))
+        _log("WARNING ゲームコンテキスト補助取得失敗: {}".format(e))
 
     return "\n".join(ctx_parts)
+
+
+def invalidate_asset_cache(folder: str = None):
+    """素材キャッシュを無効化（新しい素材追加後に呼ぶ）"""
+    global _asset_manifest_cache
+    if folder:
+        _asset_manifest_cache.pop(folder, None)
+        _log("🎮 素材キャッシュをクリア: {}".format(folder))
+    else:
+        _asset_manifest_cache.clear()
+        _log("🎮 素材キャッシュを全クリア")
 
 
 
@@ -890,8 +979,8 @@ def process_task(task, auto_write, save_path="./", anchor="", grand_state=None):
     # 🚫 Negative Cache警告（失敗パターン）
     neg_cache_warning = _get_negative_cache_warning(desc)
 
-    # ⑥ インターネット検索コンテキスト
-    internet_ctx = _build_internet_context(desc, grand_state)
+    # ⑥ インターネット検索コンテキスト（スマート判定付き）
+    internet_ctx = _build_internet_context_smart(desc, grand_state)
 
     # ⑪ 依存グラフコンテキスト（graph.py）
     graph_ctx = _build_graph_context(file_name, save_path)
