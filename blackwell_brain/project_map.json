@@ -1,0 +1,3892 @@
+{
+  "project_path": "C:\\Users\\Remon\\Desktop\\MyAI_Project",
+  "scanned_at": "2026-03-11T01:28:07.772758",
+  "total_lines": 17378,
+  "files": {
+    "analyzer.py": {
+      "path": "analyzer.py",
+      "role": "analyzer.py (23関数)",
+      "language": "python",
+      "line_count": 860,
+      "updated_at": "2026-03-11T01:28:07.781365",
+      "dependencies": [
+        "json.py",
+        "pathlib.py",
+        "typing.py",
+        "csv.py",
+        "ast.py",
+        "hashlib.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "_read_file",
+          "start": 132,
+          "end": 145,
+          "args": [
+            "filepath"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_read_upload",
+          "start": 148,
+          "end": 161,
+          "args": [
+            "file_obj",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "detect_project_type",
+          "start": 168,
+          "end": 182,
+          "args": [
+            "content",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "detect_engine",
+          "start": 185,
+          "end": 192,
+          "args": [
+            "content",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "detect_dimension",
+          "start": 195,
+          "end": 203,
+          "args": [
+            "content",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "detect_game_elements",
+          "start": 206,
+          "end": 228,
+          "args": [
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "detect_impl_patterns",
+          "start": 231,
+          "end": 254,
+          "args": [
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_parse_python",
+          "start": 261,
+          "end": 279,
+          "args": [
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_parse_generic",
+          "start": 282,
+          "end": 295,
+          "args": [
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_parse_json",
+          "start": 298,
+          "end": 323,
+          "args": [
+            "content",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_parse_csv",
+          "start": 326,
+          "end": 333,
+          "args": [
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_classify_image_role",
+          "start": 340,
+          "end": 362,
+          "args": [
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_classify_audio_role",
+          "start": 365,
+          "end": 379,
+          "args": [
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_generate_learning_points",
+          "start": 386,
+          "end": 405,
+          "args": [
+            "ptype",
+            "engine",
+            "dimension",
+            "elements",
+            "patterns",
+            "struct",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_llm_analyze",
+          "start": 412,
+          "end": 429,
+          "args": [
+            "content",
+            "filename",
+            "ptype",
+            "engine"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_generate_suggestions",
+          "start": 432,
+          "end": 445,
+          "args": [
+            "llm_summary",
+            "elements",
+            "patterns"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "analyze_any_file",
+          "start": 452,
+          "end": 555,
+          "args": [
+            "filepath",
+            "file_obj",
+            "filename"
+          ],
+          "doc": "\n    形式問わずファイルを解析して構造化された情報を返す。\n    app.py から呼ばれるメイン関数。\n    "
+        },
+        {
+          "name": "analyze_file",
+          "start": 559,
+          "end": 560,
+          "args": [
+            "filepath",
+            "file_obj",
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "absorb_project_knowledge",
+          "start": 567,
+          "end": 613,
+          "args": [
+            "analysis_result",
+            "project_name",
+            "store_fn"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "absorb_project",
+          "start": 620,
+          "end": 733,
+          "args": [
+            "folder_path",
+            "store_fn",
+            "max_files"
+          ],
+          "doc": "\n    フォルダ以下の全ファイルを解析して一括吸収。\n    app.py の「一括学習」ボタンから呼ばれる。\n    "
+        },
+        {
+          "name": "suggest_from_similar",
+          "start": 740,
+          "end": 769,
+          "args": [
+            "current_goal",
+            "project_type"
+          ],
+          "doc": "\n    過去に学習した類似プロジェクトの知識から改善提案を生成。\n    複数の良いパターンを統合してオリジナルに染め上げる。\n    "
+        },
+        {
+          "name": "analyze_game_assets_folder",
+          "start": 776,
+          "end": 827,
+          "args": [
+            "folder_path"
+          ],
+          "doc": "\n    ゲーム素材フォルダを全スキャンして素材マップを生成。\n    Blackwell がゲーム生成時に「どんな素材があるか」を把握するために使う。\n   "
+        },
+        {
+          "name": "build_game_context_from_assets",
+          "start": 834,
+          "end": 860,
+          "args": [
+            "asset_map",
+            "goal"
+          ],
+          "doc": "\n    素材マップからゲーム生成用LLMコンテキストを生成。\n    engine.py の _build_game_context() から呼ばれる。\n  "
+        }
+      ]
+    },
+    "app.py": {
+      "path": "app.py",
+      "role": "UIアプリケーション本体",
+      "language": "python",
+      "line_count": 4223,
+      "updated_at": "2026-03-11T01:28:07.816228",
+      "dependencies": [
+        "engine.py",
+        "streamlit.py",
+        "gitops.py",
+        "memory.py"
+      ],
+      "functions": [
+        {
+          "name": "get_combined_anchor",
+          "start": 122,
+          "end": 128,
+          "args": [],
+          "doc": "Blackwell主軸 + ゲーム主軸を結合して返す"
+        },
+        {
+          "name": "get_pc_status",
+          "start": 464,
+          "end": 508,
+          "args": [],
+          "doc": "PCのVRAM・RAM・CPU状況を取得してdict返す"
+        },
+        {
+          "name": "recommend_model",
+          "start": 511,
+          "end": 538,
+          "args": [
+            "status"
+          ],
+          "doc": "PC状況から最適モデルを提案"
+        },
+        {
+          "name": "check_vrstudio",
+          "start": 544,
+          "end": 551,
+          "args": [
+            "url"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "check_voicevox",
+          "start": 553,
+          "end": 558,
+          "args": [
+            "url"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "check_sd",
+          "start": 560,
+          "end": 565,
+          "args": [
+            "url"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "asset_pipeline.py": {
+      "path": "asset_pipeline.py",
+      "role": "asset_pipeline.py (18関数)",
+      "language": "python",
+      "line_count": 938,
+      "updated_at": "2026-03-11T01:28:07.821311",
+      "dependencies": [
+        "json.py",
+        "pathlib.py",
+        "wave.py",
+        "typing.py",
+        "dataclasses.py",
+        "hashlib.py",
+        "datetime.py",
+        "struct.py"
+      ],
+      "functions": [
+        {
+          "name": "_detect_role",
+          "start": 157,
+          "end": 162,
+          "args": [
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_detect_audio_role",
+          "start": 164,
+          "end": 169,
+          "args": [
+            "filename"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_detect_anim_group",
+          "start": 171,
+          "end": 183,
+          "args": [
+            "filename"
+          ],
+          "doc": "\n    player_idle_01.png → (\"player_idle\", 1)\n    enemy_run_3.png    → (\"enemy_ru"
+        },
+        {
+          "name": "_find_best_frame_size",
+          "start": 193,
+          "end": 219,
+          "args": [
+            "dimension"
+          ],
+          "doc": "\n    画像の幅/高さから最適なフレーム/タイルサイズを推定。\n    ゲーム素材でよく使われるサイズ（32/48/64px）を優先。\n    ※ 実際のプロ"
+        },
+        {
+          "name": "analyze_image",
+          "start": 222,
+          "end": 273,
+          "args": [
+            "filepath"
+          ],
+          "doc": "\n    画像ファイルを物理的に開いて解析する。\n    スプライトシートかどうかを自動判定。\n    "
+        },
+        {
+          "name": "analyze_tileset",
+          "start": 276,
+          "end": 300,
+          "args": [
+            "filepath"
+          ],
+          "doc": "タイルセット画像を解析してグリッド情報を抽出"
+        },
+        {
+          "name": "analyze_audio",
+          "start": 307,
+          "end": 357,
+          "args": [
+            "filepath"
+          ],
+          "doc": "音声ファイルを物理解析（WAV: 正確計測 / その他: 推定）"
+        },
+        {
+          "name": "_gen_sprite_snippet",
+          "start": 364,
+          "end": 389,
+          "args": [
+            "info"
+          ],
+          "doc": "スプライト情報からPygameロードコードを生成"
+        },
+        {
+          "name": "_gen_tileset_snippet",
+          "start": 392,
+          "end": 410,
+          "args": [
+            "info"
+          ],
+          "doc": "タイルセット情報からPygameコードを生成"
+        },
+        {
+          "name": "_gen_audio_snippet",
+          "start": 413,
+          "end": 431,
+          "args": [
+            "info"
+          ],
+          "doc": "音声情報からPygame.mixerコードを生成"
+        },
+        {
+          "name": "scan_project_assets",
+          "start": 444,
+          "end": 517,
+          "args": [
+            "folder"
+          ],
+          "doc": "\n    フォルダ以下の全素材を物理解析してAssetManifestを返す。\n    これがBlackwellの核心：実際に画像を開いてフレーム数を測る。\n "
+        },
+        {
+          "name": "build_pygame_context",
+          "start": 524,
+          "end": 600,
+          "args": [
+            "manifest",
+            "goal"
+          ],
+          "doc": "\n    解析済みAssetManifestからエンジンに注入するコンテキストを生成。\n    「実際のフレーム数・サイズ入り」のコードをAIが出力できるように"
+        },
+        {
+          "name": "generate_sprite_code",
+          "start": 607,
+          "end": 630,
+          "args": [
+            "manifest",
+            "sprite_name"
+          ],
+          "doc": "\n    指定スプライトの完全なPygameクラスコードを生成。\n    フレーム数・サイズは実測値が入る。\n    "
+        },
+        {
+          "name": "_gen_sheet_player_class",
+          "start": 633,
+          "end": 714,
+          "args": [
+            "info",
+            "anims"
+          ],
+          "doc": "スプライトシートベースのプレイヤークラス"
+        },
+        {
+          "name": "_gen_sequence_player_class",
+          "start": 717,
+          "end": 793,
+          "args": [
+            "anims",
+            "sprite_name"
+          ],
+          "doc": "連番スプライトシーケンスベースのプレイヤークラス"
+        },
+        {
+          "name": "_gen_simple_player_class",
+          "start": 796,
+          "end": 829,
+          "args": [
+            "info"
+          ],
+          "doc": "単体スプライト版（シートなし）"
+        },
+        {
+          "name": "generate_tilemap_code",
+          "start": 832,
+          "end": 889,
+          "args": [
+            "manifest"
+          ],
+          "doc": "タイルセット情報からTilemapクラスを生成"
+        },
+        {
+          "name": "save_manifest",
+          "start": 899,
+          "end": 938,
+          "args": [
+            "manifest",
+            "folder"
+          ],
+          "doc": "マニフェストをJSONにキャッシュ保存"
+        }
+      ]
+    },
+    "balance_ai.py": {
+      "path": "balance_ai.py",
+      "role": "balance_ai.py (10関数)",
+      "language": "python",
+      "line_count": 458,
+      "updated_at": "2026-03-11T01:28:07.824377",
+      "dependencies": [
+        "json.py",
+        "dataclasses.py",
+        "typing.py"
+      ],
+      "functions": [
+        {
+          "name": "analyze_play_log",
+          "start": 84,
+          "end": 172,
+          "args": [
+            "log_path"
+          ],
+          "doc": "\n    プレイログJSONを読んでバランスレポートを生成。\n\n    ログ形式（1プレイ=1エントリ）:\n    [\n      {\"level\": 1, \""
+        },
+        {
+          "name": "_generate_adjustments_from_issues",
+          "start": 175,
+          "end": 239,
+          "args": [
+            "issues",
+            "level_map"
+          ],
+          "doc": "問題リストから具体的な調整パラメータを生成"
+        },
+        {
+          "name": "apply_adjustments",
+          "start": 242,
+          "end": 282,
+          "args": [
+            "adjustments",
+            "code_path"
+          ],
+          "doc": "\n    調整パラメータをコードファイルに適用する。\n    定数パターン (CONST_NAME = value) を自動置換。\n    "
+        },
+        {
+          "name": "format_balance_report",
+          "start": 285,
+          "end": 319,
+          "args": [
+            "report"
+          ],
+          "doc": "バランスレポートをMarkdownで出力"
+        },
+        {
+          "name": "generate_sample_log",
+          "start": 322,
+          "end": 334,
+          "args": [
+            "path"
+          ],
+          "doc": "テスト用サンプルログを生成"
+        },
+        {
+          "name": "parse_flexible_log",
+          "start": 342,
+          "end": 430,
+          "args": [
+            "log_path"
+          ],
+          "doc": "\n    複数形式のプレイログを読んで統一フォーマットに変換する。\n\n    対応形式:\n      A) JSON配列 (既存)\n      B) 1行1エン"
+        },
+        {
+          "name": "analyze_play_log_flexible",
+          "start": 433,
+          "end": 458,
+          "args": [
+            "log_path"
+          ],
+          "doc": "\n    形式を問わずログを読んでバランスレポートを返す。\n    JSON・CSV・テキスト・Godotプリント全て対応。\n    "
+        },
+        {
+          "name": "death_rate",
+          "start": 36,
+          "end": 37,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "completion_rate",
+          "start": 40,
+          "end": 41,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "parse_kv_line",
+          "start": 401,
+          "end": 415,
+          "args": [
+            "line"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "blackwell_history.py": {
+      "path": "blackwell_history.py",
+      "role": "blackwell_history.py (18関数)",
+      "language": "python",
+      "line_count": 584,
+      "updated_at": "2026-03-11T01:28:07.829434",
+      "dependencies": [
+        "json.py",
+        "datetime.py",
+        "typing.py"
+      ],
+      "functions": [
+        {
+          "name": "_brain_dir",
+          "start": 54,
+          "end": 57,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_load_json",
+          "start": 60,
+          "end": 68,
+          "args": [
+            "project_path",
+            "filename",
+            "default"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_save_json",
+          "start": 71,
+          "end": 74,
+          "args": [
+            "project_path",
+            "filename",
+            "data"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "register_contract",
+          "start": 93,
+          "end": 117,
+          "args": [
+            "project_path",
+            "provider_file",
+            "func_name",
+            "signature",
+            "consumers",
+            "description"
+          ],
+          "doc": "\n    ファイルが公開する関数の「契約」を登録する。\n    engine.pyがファイルを生成したあとに自動呼び出し。\n    "
+        },
+        {
+          "name": "update_contract_consumers",
+          "start": 120,
+          "end": 153,
+          "args": [
+            "project_path",
+            "consumer_file",
+            "source_code"
+          ],
+          "doc": "\n    consumer_fileのソースコードを解析して、\n    他ファイルの関数を呼んでいる箇所を検出 → 契約に登録。\n    engine.pyのフ"
+        },
+        {
+          "name": "auto_register_contracts",
+          "start": 156,
+          "end": 212,
+          "args": [
+            "project_path",
+            "file_rel_path",
+            "source_code",
+            "language"
+          ],
+          "doc": "\n    ファイルの公開関数を全て契約として登録する。\n    意図記録と同様に、ファイル生成直後に呼ぶ。\n    "
+        },
+        {
+          "name": "get_contract_warning",
+          "start": 215,
+          "end": 254,
+          "args": [
+            "project_path",
+            "target_file"
+          ],
+          "doc": "\n    target_fileを修正するときの「影響範囲」警告を返す。\n    engine.pyのprocess_task冒頭で地図コンテキストと一緒に注入"
+        },
+        {
+          "name": "get_all_contracts_summary",
+          "start": 257,
+          "end": 271,
+          "args": [
+            "project_path"
+          ],
+          "doc": "app.py用: 全契約の概要リストを返す"
+        },
+        {
+          "name": "record_event",
+          "start": 286,
+          "end": 326,
+          "args": [
+            "project_path",
+            "event"
+          ],
+          "doc": "\n    開発イベントをタイムラインに追記する。\n    engine.pyから自動呼び出し。\n\n    event = {\n        \"type\":  "
+        },
+        {
+          "name": "record_task_result",
+          "start": 329,
+          "end": 370,
+          "args": [
+            "project_path",
+            "file_name",
+            "task_desc",
+            "code",
+            "score",
+            "success",
+            "feedback",
+            "error_msg"
+          ],
+          "doc": "\n    process_taskの完了後に呼ぶ。成功/失敗を記録する。\n    engine.pyの_extract_lessonを置き換える。\n    "
+        },
+        {
+          "name": "record_error",
+          "start": 373,
+          "end": 391,
+          "args": [
+            "project_path",
+            "file_name",
+            "task_desc",
+            "error_msg",
+            "failed_code"
+          ],
+          "doc": "\n    エラー発生時に記録する。engine.pyの_save_negative_cacheを置き換える。\n    "
+        },
+        {
+          "name": "_classify_error",
+          "start": 394,
+          "end": 417,
+          "args": [
+            "error_msg"
+          ],
+          "doc": "エラーを分類して (type, abstract) を返す"
+        },
+        {
+          "name": "_extract_tags",
+          "start": 420,
+          "end": 436,
+          "args": [
+            "text"
+          ],
+          "doc": "テキストからタグを自動抽出"
+        },
+        {
+          "name": "get_lessons",
+          "start": 443,
+          "end": 484,
+          "args": [
+            "project_path",
+            "task_desc",
+            "k"
+          ],
+          "doc": "\n    タスクに関連する過去の教訓を返す。\n    engine.pyの_retrieve_lessons()を置き換える。\n    "
+        },
+        {
+          "name": "get_failure_warning",
+          "start": 487,
+          "end": 515,
+          "args": [
+            "project_path",
+            "task_desc"
+          ],
+          "doc": "\n    タスクに関連する過去の失敗・エラーパターンを警告として返す。\n    engine.pyの_get_negative_cache_warning()を"
+        },
+        {
+          "name": "get_timeline_summary",
+          "start": 522,
+          "end": 545,
+          "args": [
+            "project_path",
+            "n"
+          ],
+          "doc": "直近nイベントをapp.py表示用に返す"
+        },
+        {
+          "name": "get_stats",
+          "start": 548,
+          "end": 573,
+          "args": [
+            "project_path"
+          ],
+          "doc": "統計情報を返す（app.py用）"
+        },
+        {
+          "name": "add_milestone",
+          "start": 576,
+          "end": 584,
+          "args": [
+            "project_path",
+            "title",
+            "note"
+          ],
+          "doc": "節目を手動記録（app.pyのボタンから呼ぶ）"
+        }
+      ]
+    },
+    "blackwell_prediction.py": {
+      "path": "blackwell_prediction.py",
+      "role": "blackwell_prediction.py (14関数)",
+      "language": "python",
+      "line_count": 556,
+      "updated_at": "2026-03-11T01:28:07.833516",
+      "dependencies": [
+        "json.py",
+        "dataclasses.py",
+        "typing.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "_brain_dir",
+          "start": 59,
+          "end": 62,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_load_json",
+          "start": 65,
+          "end": 73,
+          "args": [
+            "project_path",
+            "filename",
+            "default"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_save_json",
+          "start": 76,
+          "end": 79,
+          "args": [
+            "project_path",
+            "filename",
+            "data"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "predict_risks",
+          "start": 97,
+          "end": 146,
+          "args": [
+            "project_path",
+            "file_rel_path",
+            "source_code",
+            "task_desc",
+            "model"
+          ],
+          "doc": "\n    ファイル生成直後にAIが将来のリスクを予測して記録する。\n    engine.pyのprocess_task完了後に呼ぶ。\n\n    戻り値: li"
+        },
+        {
+          "name": "_detect_rule_based_risks",
+          "start": 149,
+          "end": 256,
+          "args": [
+            "code",
+            "file_path"
+          ],
+          "doc": "\n    ルールベースで即座にリスクを検出する（AI不要・高速）。\n    よくあるアンチパターンをスキャンする。\n    "
+        },
+        {
+          "name": "_predict_with_ai",
+          "start": 259,
+          "end": 304,
+          "args": [
+            "source_code",
+            "task_desc",
+            "model"
+          ],
+          "doc": "AIによる深いリスク予測（ルールでは捕捉できない問題）"
+        },
+        {
+          "name": "get_prediction_warning",
+          "start": 307,
+          "end": 348,
+          "args": [
+            "project_path",
+            "target_file"
+          ],
+          "doc": "\n    target_fileの未解決リスクを警告として返す。\n    engine.pyのprocess_task冒頭で注入する。\n    "
+        },
+        {
+          "name": "resolve_prediction",
+          "start": 351,
+          "end": 360,
+          "args": [
+            "project_path",
+            "target_file",
+            "description_keyword"
+          ],
+          "doc": "リスクを解決済みにマークする（app.pyのボタンから呼ぶ）"
+        },
+        {
+          "name": "get_all_predictions",
+          "start": 363,
+          "end": 381,
+          "args": [
+            "project_path"
+          ],
+          "doc": "app.py用: 全ファイルの未解決リスク一覧"
+        },
+        {
+          "name": "get_prediction_stats",
+          "start": 384,
+          "end": 399,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "record_parallel_result",
+          "start": 406,
+          "end": 459,
+          "args": [
+            "project_path",
+            "task_desc",
+            "file_name",
+            "candidates",
+            "chosen_path",
+            "reason"
+          ],
+          "doc": "\n    _branch_and_critique()の結果を全候補ごと記録する。\n    engine.pyのBranching完了後に呼ぶ。\n\n    ca"
+        },
+        {
+          "name": "get_parallel_insight",
+          "start": 462,
+          "end": 511,
+          "args": [
+            "project_path",
+            "task_desc"
+          ],
+          "doc": "\n    タスクに関連する過去の並列シミュ結果から知見を返す。\n    engine.pyのBranching前に注入 → 「前回Path Bは失敗した」を活か"
+        },
+        {
+          "name": "get_parallel_history",
+          "start": 514,
+          "end": 539,
+          "args": [
+            "project_path",
+            "n"
+          ],
+          "doc": "app.py用: 並列シミュ履歴"
+        },
+        {
+          "name": "get_parallel_stats",
+          "start": 542,
+          "end": 556,
+          "args": [
+            "project_path"
+          ],
+          "doc": "統計情報"
+        }
+      ]
+    },
+    "build_pipeline.py": {
+      "path": "build_pipeline.py",
+      "role": "UIコンポーネント",
+      "language": "python",
+      "line_count": 488,
+      "updated_at": "2026-03-11T01:28:07.837572",
+      "dependencies": [
+        "json.py",
+        "pathlib.py",
+        "typing.py",
+        "subprocess.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "find_godot_exe",
+          "start": 42,
+          "end": 66,
+          "args": [],
+          "doc": "Godot実行ファイルを自動検索"
+        },
+        {
+          "name": "build_godot",
+          "start": 69,
+          "end": 117,
+          "args": [
+            "project_path",
+            "target",
+            "output_name",
+            "godot_exe"
+          ],
+          "doc": "\n    Godot CLIでビルドを実行。\n    `godot --headless --export-release \"Windows Desktop\" "
+        },
+        {
+          "name": "check_export_presets",
+          "start": 120,
+          "end": 122,
+          "args": [
+            "project_path"
+          ],
+          "doc": "export_presets.cfg が存在するか確認（ない場合はビルド不可）"
+        },
+        {
+          "name": "generate_export_presets",
+          "start": 125,
+          "end": 166,
+          "args": [
+            "project_path",
+            "project_name"
+          ],
+          "doc": "Godot用 export_presets.cfg を自動生成"
+        },
+        {
+          "name": "create_snapshot",
+          "start": 173,
+          "end": 217,
+          "args": [
+            "tag",
+            "message",
+            "project_path",
+            "auto_tag"
+          ],
+          "doc": "\n    現在の状態をGitタグでスナップショット保存。\n    「この面白かったバージョン」ボタンで呼ばれる。\n    "
+        },
+        {
+          "name": "list_snapshots",
+          "start": 220,
+          "end": 243,
+          "args": [
+            "project_path"
+          ],
+          "doc": "保存済みスナップショット一覧を取得"
+        },
+        {
+          "name": "restore_snapshot",
+          "start": 246,
+          "end": 261,
+          "args": [
+            "tag",
+            "project_path"
+          ],
+          "doc": "指定タグの状態に戻す"
+        },
+        {
+          "name": "diff_from_snapshot",
+          "start": 264,
+          "end": 273,
+          "args": [
+            "tag",
+            "project_path"
+          ],
+          "doc": "スナップショットからの変更差分を取得"
+        },
+        {
+          "name": "generate_asset_map_svg",
+          "start": 280,
+          "end": 332,
+          "args": [
+            "manifest",
+            "output_path"
+          ],
+          "doc": "\n    プロジェクトの素材依存関係をSVGで出力。\n    「何がどこで使われているか」を視覚化。\n    "
+        },
+        {
+          "name": "_simple_svg",
+          "start": 335,
+          "end": 402,
+          "args": [
+            "G",
+            "output_path",
+            "manifest"
+          ],
+          "doc": "graphvizなしでシンプルなSVGを生成"
+        },
+        {
+          "name": "_text_asset_map",
+          "start": 405,
+          "end": 420,
+          "args": [
+            "manifest"
+          ],
+          "doc": "networkxもない場合のテキスト版マップ"
+        },
+        {
+          "name": "suggest_bgm_tempo",
+          "start": 427,
+          "end": 488,
+          "args": [
+            "manifest",
+            "genre"
+          ],
+          "doc": "\n    既存のBGM素材のBPMを分析して最適なゲームテンポを提案。\n    asset_pipeline.py で測定したBPM推定値を活用。\n    "
+        }
+      ]
+    },
+    "bw_watchdog.py": {
+      "path": "bw_watchdog.py",
+      "role": "bw_watchdog.py (8関数)",
+      "language": "python",
+      "line_count": 260,
+      "updated_at": "2026-03-11T01:28:07.839610",
+      "dependencies": [
+        "pathlib.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "_log",
+          "start": 27,
+          "end": 35,
+          "args": [
+            "msg"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "start_streamlit",
+          "start": 42,
+          "end": 51,
+          "args": [
+            "app_path",
+            "port"
+          ],
+          "doc": "Streamlitを起動してプロセスを返す"
+        },
+        {
+          "name": "watch_and_restart",
+          "start": 54,
+          "end": 81,
+          "args": [
+            "app_path",
+            "port",
+            "max_restarts",
+            "check_interval"
+          ],
+          "doc": "Streamlitが落ちたら自動再起動するメインループ"
+        },
+        {
+          "name": "get_system_status",
+          "start": 88,
+          "end": 113,
+          "args": [],
+          "doc": "CPU・RAM・Ollama応答時間を取得"
+        },
+        {
+          "name": "run_dream_batch",
+          "start": 120,
+          "end": 216,
+          "args": [
+            "project_path",
+            "model"
+          ],
+          "doc": "\n    Blackwellが「眠っている間」に自律的に振り返りと改善案生成を行う。\n\n    処理内容:\n      1. 過去の会話履歴・生成ログを読む\n "
+        },
+        {
+          "name": "get_latest_dreams",
+          "start": 219,
+          "end": 231,
+          "args": [],
+          "doc": "最新の夜間バッチ結果を返す（UI表示用）"
+        },
+        {
+          "name": "get_watchdog_log",
+          "start": 234,
+          "end": 239,
+          "args": [
+            "n"
+          ],
+          "doc": "Watchdogログの直近n行を返す"
+        },
+        {
+          "name": "shutdown",
+          "start": 60,
+          "end": 63,
+          "args": [
+            "signum",
+            "frame"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "character.py": {
+      "path": "character.py",
+      "role": "character.py (2関数)",
+      "language": "python",
+      "line_count": 25,
+      "updated_at": "2026-03-11T01:28:07.840630",
+      "dependencies": [
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "__post_init__",
+          "start": 10,
+          "end": 13,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "take_damage",
+          "start": 15,
+          "end": 25,
+          "args": [
+            "self",
+            "damage"
+          ],
+          "doc": "\n        キャラクターにダメージを与えるメソッド。\n\n        :param damage: 与えられるダメージ量 (int)\n        :"
+        }
+      ]
+    },
+    "doc_gen.py": {
+      "path": "doc_gen.py",
+      "role": "doc_gen.py (5関数)",
+      "language": "python",
+      "line_count": 146,
+      "updated_at": "2026-03-11T01:28:07.841651",
+      "dependencies": [
+        "pathlib.py"
+      ],
+      "functions": [
+        {
+          "name": "_call_ollama",
+          "start": 21,
+          "end": 30,
+          "args": [
+            "prompt",
+            "model"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "generate_readme",
+          "start": 33,
+          "end": 65,
+          "args": [
+            "project_path",
+            "anchor"
+          ],
+          "doc": "プロジェクト全体のREADME.mdを自動生成"
+        },
+        {
+          "name": "generate_function_docs",
+          "start": 68,
+          "end": 86,
+          "args": [
+            "code_path"
+          ],
+          "doc": "コードファイルの全関数に日本語ドキュメントを生成"
+        },
+        {
+          "name": "generate_design_doc",
+          "start": 89,
+          "end": 121,
+          "args": [
+            "project_path",
+            "anchor"
+          ],
+          "doc": "プロジェクトの設計書（技術仕様書）を自動生成"
+        },
+        {
+          "name": "inject_gdoc_strings",
+          "start": 124,
+          "end": 146,
+          "args": [
+            "gd_path"
+          ],
+          "doc": "\n    GDScriptファイルにdoc_stringを自動注入して返す。\n    Godot4の ## コメント形式で各関数の上に追加。\n    "
+        }
+      ]
+    },
+    "emotion_graph.py": {
+      "path": "emotion_graph.py",
+      "role": "emotion_graph.py (9関数)",
+      "language": "python",
+      "line_count": 364,
+      "updated_at": "2026-03-11T01:28:07.845736",
+      "dependencies": [
+        "typing.py",
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "compute_emotion_curve",
+          "start": 81,
+          "end": 189,
+          "args": [
+            "events",
+            "window",
+            "smoothing"
+          ],
+          "doc": "\n    イベントリストから感情曲線を計算する。\n\n    events: list of dicts or PlayEvent\n      [{\"t\": 10"
+        },
+        {
+          "name": "_detect_problem_zones",
+          "start": 192,
+          "end": 226,
+          "args": [
+            "points"
+          ],
+          "doc": "感情曲線から問題ゾーンを検出"
+        },
+        {
+          "name": "_make_zone",
+          "start": 229,
+          "end": 244,
+          "args": [
+            "ztype",
+            "start",
+            "end"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "build_emotion_svg",
+          "start": 247,
+          "end": 318,
+          "args": [
+            "data",
+            "width",
+            "height"
+          ],
+          "doc": "感情曲線をSVGで描画"
+        },
+        {
+          "name": "parse_log_to_events",
+          "start": 321,
+          "end": 345,
+          "args": [
+            "log_path"
+          ],
+          "doc": "\n    プレイログJSONからPlayEvent形式に変換するヘルパー。\n    balance_ai.py の parse_flexible_log と組み"
+        },
+        {
+          "name": "generate_sample_events",
+          "start": 348,
+          "end": 364,
+          "args": [],
+          "doc": "テスト用サンプルイベント"
+        },
+        {
+          "name": "px",
+          "start": 258,
+          "end": 258,
+          "args": [
+            "t"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "py",
+          "start": 259,
+          "end": 259,
+          "args": [
+            "v"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "polyline",
+          "start": 291,
+          "end": 294,
+          "args": [
+            "key",
+            "color",
+            "stroke_w"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "enemy.py": {
+      "path": "enemy.py",
+      "role": "敵キャラクターAI",
+      "language": "python",
+      "line_count": 72,
+      "updated_at": "2026-03-11T01:28:07.846753",
+      "dependencies": [
+        "typing.py",
+        "logging.py",
+        "json.py"
+      ],
+      "functions": [
+        {
+          "name": "__init__",
+          "start": 17,
+          "end": 19,
+          "args": [
+            "self",
+            "data"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "start": 27,
+          "end": 30,
+          "args": [
+            "self",
+            "data"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "attack",
+          "start": 32,
+          "end": 41,
+          "args": [
+            "self"
+          ],
+          "doc": "\n        敵キャラクターが攻撃を実行するメソッド。\n        "
+        },
+        {
+          "name": "defend",
+          "start": 43,
+          "end": 52,
+          "args": [
+            "self"
+          ],
+          "doc": "\n        敵キャラクターが防御を実行するメソッド。\n        "
+        }
+      ]
+    },
+    "engine.py": {
+      "path": "engine.py",
+      "role": "AIエンジン中枢",
+      "language": "python",
+      "line_count": 2495,
+      "updated_at": "2026-03-11T01:28:07.862558",
+      "dependencies": [
+        "json.py",
+        "base64.py",
+        "pathlib.py",
+        "internet.py",
+        "typing.py",
+        "gitops.py",
+        "difflib.py",
+        "ast.py",
+        "memory.py",
+        "sandbox.py",
+        "ollama.py",
+        "subprocess.py",
+        "tempfile.py",
+        "datetime.py",
+        "requests.py"
+      ],
+      "functions": [
+        {
+          "name": "_log",
+          "start": 153,
+          "end": 157,
+          "args": [
+            "msg"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_execution_log",
+          "start": 160,
+          "end": 161,
+          "args": [],
+          "doc": ""
+        },
+        {
+          "name": "clear_execution_log",
+          "start": 164,
+          "end": 165,
+          "args": [],
+          "doc": ""
+        },
+        {
+          "name": "_is_diff_output",
+          "start": 172,
+          "end": 176,
+          "args": [
+            "text"
+          ],
+          "doc": "AIの出力が差分形式かどうか判定する"
+        },
+        {
+          "name": "extract_code",
+          "start": 179,
+          "end": 185,
+          "args": [
+            "text"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "analyze_deps",
+          "start": 188,
+          "end": 200,
+          "args": [
+            "code"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_extract_relevant_context",
+          "start": 203,
+          "end": 307,
+          "args": [
+            "existing_code",
+            "task_desc",
+            "max_chars"
+          ],
+          "doc": "\n    既存コードから タスクに関連する関数・クラスだけを抽出する。\n    3000文字丸ごと渡す代わりに関連部分だけ渡すことで:\n      - トークン"
+        },
+        {
+          "name": "apply_diff",
+          "start": 311,
+          "end": 316,
+          "args": [
+            "old",
+            "new"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "load_grand_state",
+          "start": 321,
+          "end": 348,
+          "args": [
+            "base_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_build_rag_context",
+          "start": 355,
+          "end": 362,
+          "args": [
+            "desc",
+            "k"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_detect_code_language",
+          "start": 369,
+          "end": 384,
+          "args": [
+            "code"
+          ],
+          "doc": "コードの言語を判定する"
+        },
+        {
+          "name": "_score_python",
+          "start": 387,
+          "end": 472,
+          "args": [
+            "code",
+            "task_desc"
+          ],
+          "doc": "Pythonコードをルールベースでスコアリング"
+        },
+        {
+          "name": "_score_gdscript",
+          "start": 475,
+          "end": 524,
+          "args": [
+            "code",
+            "task_desc"
+          ],
+          "doc": "GDScriptコードをルールベースでスコアリング"
+        },
+        {
+          "name": "_score_csharp",
+          "start": 527,
+          "end": 549,
+          "args": [
+            "code",
+            "task_desc"
+          ],
+          "doc": "C#コードを簡易ルールベースでスコアリング"
+        },
+        {
+          "name": "_score_cpp",
+          "start": 552,
+          "end": 567,
+          "args": [
+            "code",
+            "task_desc"
+          ],
+          "doc": "C++コードを簡易ルールベースでスコアリング"
+        },
+        {
+          "name": "score_code",
+          "start": 570,
+          "end": 603,
+          "args": [
+            "code",
+            "task_desc"
+          ],
+          "doc": "\n    ルールベース多言語コード品質スコアリング。\n    モデル非依存・言語自動判定・安定動作。\n\n    修正前: AIモデルに採点させていた（モデル依存"
+        },
+        {
+          "name": "_generate_with_score_loop",
+          "start": 606,
+          "end": 644,
+          "args": [
+            "system_prompt",
+            "desc",
+            "max_score_attempts"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_build_internet_context",
+          "start": 651,
+          "end": 667,
+          "args": [
+            "desc",
+            "grand_state"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_build_cot_prefix",
+          "start": 674,
+          "end": 686,
+          "args": [
+            "desc"
+          ],
+          "doc": "\n    コードを書く前にAIに「3点を日本語で先書き」させるプレフィックス。\n    言語化=自己デバッグ。これだけで精度が大幅に上がる。\n    "
+        },
+        {
+          "name": "_branch_and_critique",
+          "start": 693,
+          "end": 799,
+          "args": [
+            "desc",
+            "system_prompt",
+            "use_branching"
+          ],
+          "doc": "\n    3案並列生成 + Criticによる1往復評価。\n    \n    Path A (保守的/安定): 既存ライブラリ・枯れた技術のみ\n    Path"
+        },
+        {
+          "name": "_build_graph_context",
+          "start": 806,
+          "end": 821,
+          "args": [
+            "task_desc",
+            "save_path"
+          ],
+          "doc": "\n    graph.pyを使って依存グラフ＋関連ファイル構造をコンテキスト生成。\n    影響半径警告も含める。\n    "
+        },
+        {
+          "name": "_should_search_internet",
+          "start": 835,
+          "end": 861,
+          "args": [
+            "desc"
+          ],
+          "doc": "\n    速度改善: タスク内容からネット検索が必要かを判定。\n    「標準ライブラリだけで解決できる」「既知パターン」は検索スキップ。\n    "
+        },
+        {
+          "name": "_build_internet_context_smart",
+          "start": 864,
+          "end": 872,
+          "args": [
+            "desc",
+            "grand_state"
+          ],
+          "doc": "検索判定付きのインターネットコンテキスト生成（速度改善版）"
+        },
+        {
+          "name": "_build_game_context",
+          "start": 875,
+          "end": 964,
+          "args": [
+            "desc",
+            "save_path"
+          ],
+          "doc": "\n    game_theory(MDA理論) + asset_pipeline(物理解析) + knowledge_api(無料API)\n    を統合したゲ"
+        },
+        {
+          "name": "invalidate_asset_cache",
+          "start": 968,
+          "end": 976,
+          "args": [
+            "folder"
+          ],
+          "doc": "素材キャッシュを無効化（新しい素材追加後に呼ぶ）"
+        },
+        {
+          "name": "plan",
+          "start": 985,
+          "end": 1014,
+          "args": [
+            "goal",
+            "anchor",
+            "history",
+            "grand_state"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_self_critique",
+          "start": 1021,
+          "end": 1074,
+          "args": [
+            "goal",
+            "plan_result",
+            "anchor"
+          ],
+          "doc": "\n    Plannerが作った計画をCriticが批判し、改善案を出す。\n    戻り値: {\"critique\": str, \"improved_tasks"
+        },
+        {
+          "name": "_extract_lesson",
+          "start": 1081,
+          "end": 1140,
+          "args": [
+            "task_desc",
+            "code",
+            "score_result",
+            "success"
+          ],
+          "doc": "\n    タスク実行結果から「教訓」を抽出してメモリに蓄積する。\n    成功パターンも失敗パターンも両方学習する。\n    \n    これがない場合との違い:"
+        },
+        {
+          "name": "_retrieve_lessons",
+          "start": 1143,
+          "end": 1153,
+          "args": [
+            "task_desc",
+            "k"
+          ],
+          "doc": "\n    過去の教訓から類似するものを取得してプロンプトに注入する。\n    "
+        },
+        {
+          "name": "_classify_error",
+          "start": 1162,
+          "end": 1198,
+          "args": [
+            "error_msg"
+          ],
+          "doc": "\n    エラーメッセージを分類・抽象化してNegative Cacheに保存できる形にする。\n    「なぜ失敗したか」を記録する核心部分。\n    "
+        },
+        {
+          "name": "_save_negative_cache",
+          "start": 1201,
+          "end": 1233,
+          "args": [
+            "task_desc",
+            "error_info",
+            "failed_code_snippet"
+          ],
+          "doc": "\n    失敗パターンをNegative CacheとしてベクトルDBに保存。\n    次回同じ罠を踏みそうになったときに「待った」をかける。\n    "
+        },
+        {
+          "name": "_get_negative_cache_warning",
+          "start": 1236,
+          "end": 1247,
+          "args": [
+            "task_desc"
+          ],
+          "doc": "\n    過去の失敗パターンを検索して警告文を返す。\n    コード生成前にプロンプトに注入することで「同じ罠を踏まない」。\n    "
+        },
+        {
+          "name": "self_heal",
+          "start": 1250,
+          "end": 1318,
+          "args": [
+            "code",
+            "max_attempts",
+            "task_desc"
+          ],
+          "doc": "\n    完全Sandboxループ:\n    実行 → エラー分類 → 原因分析 → Negative Cache保存 → 修正再生成 → 再実行\n    \n "
+        },
+        {
+          "name": "optimize",
+          "start": 1325,
+          "end": 1339,
+          "args": [
+            "code"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "export_to_godot",
+          "start": 1346,
+          "end": 1400,
+          "args": [
+            "file_name",
+            "code",
+            "grand_state"
+          ],
+          "doc": "\n    GodotプロジェクトにGDScript/C#ファイルを書き出し、\n    可能であればGodotエディタにホットリロードを通知する。\n\n    修正"
+        },
+        {
+          "name": "_notify_godot_editor_reload",
+          "start": 1403,
+          "end": 1446,
+          "args": [
+            "file_path",
+            "project_path"
+          ],
+          "doc": "\n    実行中のGodotエディタプロセスを検知して\n    EditorScriptでリロードを試みる。\n    "
+        },
+        {
+          "name": "_touch_godot_filesystem",
+          "start": 1449,
+          "end": 1459,
+          "args": [
+            "project_path"
+          ],
+          "doc": "Godotのファイル変更検知を促すためにメタデータを更新"
+        },
+        {
+          "name": "_generate_reload_script",
+          "start": 1462,
+          "end": 1475,
+          "args": [
+            "file_path"
+          ],
+          "doc": "Godotエディタのファイルシステムをリスキャンするスクリプト"
+        },
+        {
+          "name": "process_task",
+          "start": 1482,
+          "end": 1775,
+          "args": [
+            "task",
+            "auto_write",
+            "save_path",
+            "anchor",
+            "grand_state"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "autonomous_dev",
+          "start": 1782,
+          "end": 1844,
+          "args": [
+            "goal",
+            "auto_write",
+            "save_path",
+            "anchor",
+            "history",
+            "max_cycles"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "analyze_and_absorb",
+          "start": 1851,
+          "end": 1870,
+          "args": [
+            "file_name",
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "chat_with_persona",
+          "start": 1877,
+          "end": 1916,
+          "args": [
+            "message",
+            "persona",
+            "history",
+            "anchor",
+            "use_internet",
+            "grand_state"
+          ],
+          "doc": "\n    性格付きの会話AI。\n    use_internet=True の場合、メッセージに応じてインターネット検索を自動実行して回答精度を向上。\n    "
+        },
+        {
+          "name": "monitor_project",
+          "start": 1923,
+          "end": 1977,
+          "args": [
+            "save_path",
+            "anchor"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "generate_image_sd",
+          "start": 1984,
+          "end": 2015,
+          "args": [
+            "prompt",
+            "negative_prompt",
+            "save_dir",
+            "grand_state"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "speak_voicevox",
+          "start": 2022,
+          "end": 2047,
+          "args": [
+            "text",
+            "speaker_id",
+            "save_dir",
+            "voicevox_url"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "transcribe_whisper",
+          "start": 2050,
+          "end": 2070,
+          "args": [
+            "audio_path",
+            "model_size",
+            "language"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "aivtuber_respond",
+          "start": 2073,
+          "end": 2096,
+          "args": [
+            "user_text",
+            "persona",
+            "speaker_id",
+            "voicevox_url",
+            "voice_save_dir",
+            "history"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "set_feeling_params",
+          "start": 2106,
+          "end": 2110,
+          "args": [
+            "params"
+          ],
+          "doc": "app.pyのフィーリングスライダーUIから呼ばれる"
+        },
+        {
+          "name": "_build_feeling_context",
+          "start": 2113,
+          "end": 2144,
+          "args": [],
+          "doc": "フィーリングスライダーのパラメータをプロンプト用文字列に変換"
+        },
+        {
+          "name": "apply_diff_output",
+          "start": 2152,
+          "end": 2195,
+          "args": [
+            "existing_code",
+            "diff_output"
+          ],
+          "doc": "\n    AIが出力した差分を既存コードに適用して完成形コードを返す。\n\n    差分形式:\n      -削除する行\n      +追加する行\n      ("
+        },
+        {
+          "name": "multi_agent_generate",
+          "start": 2227,
+          "end": 2342,
+          "args": [
+            "desc",
+            "anchor",
+            "save_path",
+            "use_agents"
+          ],
+          "doc": "\n    複数専門AIを並列実行してコードを生成する。\n\n    フロー:\n      1. architect: 設計仕様を生成\n      2. coder"
+        },
+        {
+          "name": "stream_generate",
+          "start": 2350,
+          "end": 2381,
+          "args": [
+            "desc",
+            "system_prompt",
+            "model"
+          ],
+          "doc": "\n    Ollamaのストリーミングモードでコードをトークンごとに返すジェネレータ。\n\n    Streamlitでの使い方:\n        with st"
+        },
+        {
+          "name": "stream_autonomous_dev",
+          "start": 2384,
+          "end": 2425,
+          "args": [
+            "goal",
+            "anchor",
+            "save_path"
+          ],
+          "doc": "\n    autonomous_devのストリーミング版。\n    設計フェーズのプランナー出力をリアルタイムで流す。\n\n    Streamlitでの使い方:"
+        },
+        {
+          "name": "run_playtest_auto",
+          "start": 2433,
+          "end": 2495,
+          "args": [
+            "project_path",
+            "scene_path",
+            "godot_exe",
+            "timeout"
+          ],
+          "doc": "\n    Godotをヘッドレスで自動プレイテストして結果を返す。\n\n    1. ai_playtest.gd を生成（未存在なら）\n    2. Godot"
+        },
+        {
+          "name": "_run_agent",
+          "start": 2253,
+          "end": 2267,
+          "args": [
+            "name",
+            "prompt"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_map_context",
+          "start": 49,
+          "end": 49,
+          "args": [
+            "p",
+            "t",
+            "f"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "update_file_entry",
+          "start": 50,
+          "end": 50,
+          "args": [
+            "p",
+            "f"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "auto_store_intent",
+          "start": 51,
+          "end": 51,
+          "args": [
+            "p",
+            "f",
+            "c",
+            "t"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_map_stats",
+          "start": 52,
+          "end": 52,
+          "args": [
+            "p"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "scan_project",
+          "start": 53,
+          "end": 53,
+          "args": [
+            "p"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_contract_warning",
+          "start": 65,
+          "end": 65,
+          "args": [
+            "p",
+            "f"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "auto_register_contracts",
+          "start": 66,
+          "end": 66,
+          "args": [
+            "p",
+            "f",
+            "s",
+            "l"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "update_contract_consumers",
+          "start": 67,
+          "end": 67,
+          "args": [
+            "p",
+            "f",
+            "s"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "record_task_result",
+          "start": 68,
+          "end": 68,
+          "args": [
+            "p",
+            "f",
+            "t",
+            "c",
+            "sc",
+            "su",
+            "fb",
+            "e"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "record_error",
+          "start": 69,
+          "end": 69,
+          "args": [
+            "p",
+            "f",
+            "t",
+            "e",
+            "c"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_lessons",
+          "start": 70,
+          "end": 70,
+          "args": [
+            "p",
+            "t",
+            "k"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_failure_warning",
+          "start": 71,
+          "end": 71,
+          "args": [
+            "p",
+            "t"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "predict_risks",
+          "start": 82,
+          "end": 82,
+          "args": [
+            "p",
+            "f",
+            "c",
+            "t",
+            "m"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_prediction_warning",
+          "start": 83,
+          "end": 83,
+          "args": [
+            "p",
+            "f"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "record_parallel_result",
+          "start": 84,
+          "end": 84,
+          "args": [
+            "p",
+            "t",
+            "f",
+            "cands",
+            "chosen",
+            "reason"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_parallel_insight",
+          "start": 85,
+          "end": 85,
+          "args": [
+            "p",
+            "t"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "error_dict.py": {
+      "path": "error_dict.py",
+      "role": "error_dict.py (15関数)",
+      "language": "python",
+      "line_count": 774,
+      "updated_at": "2026-03-11T01:28:07.867666",
+      "dependencies": [
+        "json.py",
+        "typing.py",
+        "dataclasses.py",
+        "hashlib.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "diagnose",
+          "start": 445,
+          "end": 507,
+          "args": [
+            "error_text",
+            "engine_hint"
+          ],
+          "doc": "\n    エラーテキストを受け取り、最もマッチするパターンを返す。\n    engine_hint: \"godot4\" / \"godot3\" / \"pygame"
+        },
+        {
+          "name": "auto_fix",
+          "start": 510,
+          "end": 546,
+          "args": [
+            "diagnosis",
+            "file_path"
+          ],
+          "doc": "\n    診断結果に基づいてファイルを自動修正する。\n    戻り値: {\"success\": bool, \"fixed_lines\": int, \"backu"
+        },
+        {
+          "name": "format_diagnosis",
+          "start": 549,
+          "end": 576,
+          "args": [
+            "d"
+          ],
+          "doc": "診断結果を読みやすいMarkdownで返す"
+        },
+        {
+          "name": "get_all_patterns",
+          "start": 579,
+          "end": 580,
+          "args": [],
+          "doc": ""
+        },
+        {
+          "name": "_load_learned",
+          "start": 587,
+          "end": 595,
+          "args": [],
+          "doc": "永続化された学習パターンを読み込む"
+        },
+        {
+          "name": "_save_learned",
+          "start": 598,
+          "end": 604,
+          "args": [
+            "patterns"
+          ],
+          "doc": "学習パターンをJSONに保存"
+        },
+        {
+          "name": "_load_encounters",
+          "start": 607,
+          "end": 615,
+          "args": [],
+          "doc": "エラー遭遇回数カウンターを読み込む"
+        },
+        {
+          "name": "_save_encounters",
+          "start": 618,
+          "end": 623,
+          "args": [
+            "enc"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_error_fingerprint",
+          "start": 626,
+          "end": 632,
+          "args": [
+            "error_text"
+          ],
+          "doc": "エラーの指紋（重複学習防止用ハッシュ）"
+        },
+        {
+          "name": "learn_from_error",
+          "start": 635,
+          "end": 682,
+          "args": [
+            "error_text",
+            "cause",
+            "fix",
+            "engine",
+            "title",
+            "search_for",
+            "replace_with"
+          ],
+          "doc": "\n    新しいエラーパターンを学習辞書に追加する。\n    重複チェックあり・永続保存。\n\n    呼ばれるタイミング:\n      - diagnose()"
+        },
+        {
+          "name": "_record_encounter",
+          "start": 685,
+          "end": 689,
+          "args": [
+            "pattern_id"
+          ],
+          "doc": "マッチしたパターンの遭遇回数を記録"
+        },
+        {
+          "name": "get_learned_patterns",
+          "start": 692,
+          "end": 694,
+          "args": [],
+          "doc": "学習済みパターン一覧を返す"
+        },
+        {
+          "name": "get_frequent_errors",
+          "start": 697,
+          "end": 719,
+          "args": [
+            "n"
+          ],
+          "doc": "よく遭遇するエラー上位n件を返す（UI表示用）"
+        },
+        {
+          "name": "_diagnose_with_learned",
+          "start": 726,
+          "end": 747,
+          "args": [
+            "error_text",
+            "engine_hint"
+          ],
+          "doc": "学習済みパターンからマッチを探す"
+        },
+        {
+          "name": "diagnose",
+          "start": 753,
+          "end": 774,
+          "args": [
+            "error_text",
+            "engine_hint"
+          ],
+          "doc": "\n    エラーを診断する（自動学習対応版）。\n    1. 組み込みパターンでマッチ\n    2. 学習済みパターンでマッチ\n    3. どちらもマッチしな"
+        }
+      ]
+    },
+    "gameplay_analyzer.py": {
+      "path": "gameplay_analyzer.py",
+      "role": "gameplay_analyzer.py (11関数)",
+      "language": "python",
+      "line_count": 466,
+      "updated_at": "2026-03-11T01:28:07.871711",
+      "dependencies": [
+        "base64.py",
+        "pathlib.py",
+        "json.py",
+        "typing.py",
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "_find_vision_model",
+          "start": 77,
+          "end": 89,
+          "args": [],
+          "doc": "利用可能なビジョンモデルを探す"
+        },
+        {
+          "name": "_encode_image",
+          "start": 92,
+          "end": 103,
+          "args": [
+            "image_path"
+          ],
+          "doc": "画像をbase64エンコードして (base64_str, media_type) を返す"
+        },
+        {
+          "name": "_build_analysis_prompt",
+          "start": 106,
+          "end": 162,
+          "args": [
+            "context"
+          ],
+          "doc": "ゲームプレイ解析用プロンプトを組み立てる"
+        },
+        {
+          "name": "_parse_analysis_response",
+          "start": 165,
+          "end": 233,
+          "args": [
+            "raw"
+          ],
+          "doc": "AIの応答をパースして構造化データにする"
+        },
+        {
+          "name": "analyze_screenshot",
+          "start": 236,
+          "end": 300,
+          "args": [
+            "image_path",
+            "context"
+          ],
+          "doc": "\n    スクリーンショットを解析してゲームプレイ評価を返す。\n\n    context: {\n      \"game_type\": \"2Dアクション\",\n  "
+        },
+        {
+          "name": "analyze_from_bytes",
+          "start": 303,
+          "end": 323,
+          "args": [
+            "image_bytes",
+            "context",
+            "filename"
+          ],
+          "doc": "\n    バイト列から直接解析（Streamlitのfile_uploaderと組み合わせる）。\n    "
+        },
+        {
+          "name": "analyze_video_frames",
+          "start": 326,
+          "end": 412,
+          "args": [
+            "video_path",
+            "context",
+            "max_frames"
+          ],
+          "doc": "\n    動画ファイルからフレームを抽出して複数枚解析する。\n    ffmpegが必要。\n    "
+        },
+        {
+          "name": "format_analysis",
+          "start": 415,
+          "end": 466,
+          "args": [
+            "result"
+          ],
+          "doc": "解析結果をMarkdownで出力"
+        },
+        {
+          "name": "extract_section",
+          "start": 191,
+          "end": 193,
+          "args": [
+            "header_pattern",
+            "next_header"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "dedup",
+          "start": 389,
+          "end": 396,
+          "args": [
+            "lst"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "stars",
+          "start": 420,
+          "end": 422,
+          "args": [
+            "score"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "game_theory.py": {
+      "path": "game_theory.py",
+      "role": "game_theory.py (9関数)",
+      "language": "python",
+      "line_count": 396,
+      "updated_at": "2026-03-11T01:28:07.874776",
+      "dependencies": [
+        "typing.py",
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "apply_feeling_slider",
+          "start": 145,
+          "end": 195,
+          "args": [
+            "sliders",
+            "engine",
+            "genre"
+          ],
+          "doc": "\n    フィーリングスライダーの値を具体的なゲームパラメータに変換。\n    CursorやSonnetには絶対できない：「重厚感」→数値への自動変換。\n  "
+        },
+        {
+          "name": "_lerp",
+          "start": 198,
+          "end": 200,
+          "args": [
+            "a",
+            "b",
+            "t"
+          ],
+          "doc": "線形補間: t=0→a, t=1→b"
+        },
+        {
+          "name": "_describe_feeling",
+          "start": 203,
+          "end": 216,
+          "args": [
+            "s"
+          ],
+          "doc": "スライダー値を日本語で説明"
+        },
+        {
+          "name": "_gen_feeling_code",
+          "start": 219,
+          "end": 250,
+          "args": [
+            "params",
+            "engine",
+            "genre"
+          ],
+          "doc": "フィーリングパラメータをエンジン別コードに変換"
+        },
+        {
+          "name": "get_mda_context",
+          "start": 257,
+          "end": 273,
+          "args": [
+            "genre",
+            "goal"
+          ],
+          "doc": "\n    MDA理論をベースにしたコード生成コンテキスト。\n    「なぜそのパラメータにするか」をAIが理解してコードを書く。\n    "
+        },
+        {
+          "name": "analyze_flow",
+          "start": 276,
+          "end": 302,
+          "args": [
+            "game_desc",
+            "player_skill"
+          ],
+          "doc": "フロー理論でゲームのバランスを診断"
+        },
+        {
+          "name": "get_fun_theory_prompt",
+          "start": 305,
+          "end": 311,
+          "args": [
+            "genre"
+          ],
+          "doc": "コーダーへの注入用プロンプト（簡易版）"
+        },
+        {
+          "name": "generate_playtest_script",
+          "start": 378,
+          "end": 380,
+          "args": [
+            "scene_path"
+          ],
+          "doc": "AIプレイテストスクリプト（Godot GDScript）を生成"
+        },
+        {
+          "name": "parse_playtest_result",
+          "start": 383,
+          "end": 396,
+          "args": [
+            "result_json"
+          ],
+          "doc": "プレイテスト結果をレポートに変換"
+        }
+      ]
+    },
+    "gitops.py": {
+      "path": "gitops.py",
+      "role": "gitops.py (7関数)",
+      "language": "python",
+      "line_count": 148,
+      "updated_at": "2026-03-11T01:28:07.875794",
+      "dependencies": [
+        "subprocess.py"
+      ],
+      "functions": [
+        {
+          "name": "_run",
+          "start": 23,
+          "end": 28,
+          "args": [
+            "cmd",
+            "cwd"
+          ],
+          "doc": "コマンドを実行して (returncode, stdout, stderr) を返す。"
+        },
+        {
+          "name": "init_repo",
+          "start": 31,
+          "end": 33,
+          "args": [
+            "path"
+          ],
+          "doc": "Git リポジトリを初期化する。すでに存在する場合は何もしない。"
+        },
+        {
+          "name": "commit_all",
+          "start": 36,
+          "end": 39,
+          "args": [
+            "message",
+            "path"
+          ],
+          "doc": "すべての変更をステージングしてコミットする。"
+        },
+        {
+          "name": "get_git_log",
+          "start": 42,
+          "end": 56,
+          "args": [
+            "max_entries",
+            "path"
+          ],
+          "doc": "\n    Git のコミット履歴を返す。\n    戻り値: \"ハッシュ | 日付 | メッセージ\" 形式の文字列\n    "
+        },
+        {
+          "name": "setup_github_remote",
+          "start": 59,
+          "end": 89,
+          "args": [
+            "repo_url",
+            "token",
+            "path"
+          ],
+          "doc": "\n    GitHub リモートリポジトリを設定する。\n\n    引数:\n        repo_url : https://github.com/usern"
+        },
+        {
+          "name": "push_to_github",
+          "start": 92,
+          "end": 132,
+          "args": [
+            "branch",
+            "token",
+            "repo_url",
+            "path"
+          ],
+          "doc": "\n    GitHubへ push する。\n\n    引数:\n        branch   : プッシュするブランチ名（デフォルト: main）\n     "
+        },
+        {
+          "name": "get_remote_url",
+          "start": 135,
+          "end": 144,
+          "args": [
+            "path"
+          ],
+          "doc": "現在設定されているリモートURLを返す。未設定なら空文字。"
+        }
+      ]
+    },
+    "health_check.py": {
+      "path": "health_check.py",
+      "role": "health_check.py (12関数)",
+      "language": "python",
+      "line_count": 521,
+      "updated_at": "2026-03-11T01:28:07.880841",
+      "dependencies": [
+        "pathlib.py",
+        "typing.py",
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "_get_files",
+          "start": 65,
+          "end": 77,
+          "args": [
+            "project_path",
+            "exts"
+          ],
+          "doc": "指定拡張子のファイル一覧を取得"
+        },
+        {
+          "name": "_check_todos",
+          "start": 84,
+          "end": 106,
+          "args": [
+            "project_path"
+          ],
+          "doc": "TODO / FIXME / HACK / XXX を検出"
+        },
+        {
+          "name": "_check_duplicate_code",
+          "start": 109,
+          "end": 138,
+          "args": [
+            "project_path"
+          ],
+          "doc": "ハッシュベースの重複コードブロック検出（10行以上）"
+        },
+        {
+          "name": "_check_godot3_api",
+          "start": 141,
+          "end": 158,
+          "args": [
+            "project_path"
+          ],
+          "doc": "Godot3のAPI残存チェック"
+        },
+        {
+          "name": "_check_long_functions",
+          "start": 161,
+          "end": 215,
+          "args": [
+            "project_path"
+          ],
+          "doc": "長すぎる関数の検出"
+        },
+        {
+          "name": "_check_unused_assets",
+          "start": 218,
+          "end": 254,
+          "args": [
+            "project_path"
+          ],
+          "doc": "未使用素材の検出（コード内での参照チェック）"
+        },
+        {
+          "name": "_check_empty_files",
+          "start": 257,
+          "end": 281,
+          "args": [
+            "project_path"
+          ],
+          "doc": "空ファイル・ほぼ空のファイルを検出"
+        },
+        {
+          "name": "_check_magic_numbers",
+          "start": 284,
+          "end": 309,
+          "args": [
+            "project_path"
+          ],
+          "doc": "マジックナンバーの検出（定数化を推奨）"
+        },
+        {
+          "name": "run_health_check",
+          "start": 316,
+          "end": 372,
+          "args": [
+            "project_path"
+          ],
+          "doc": "プロジェクト全体の健康診断を実行"
+        },
+        {
+          "name": "format_report",
+          "start": 375,
+          "end": 430,
+          "args": [
+            "report"
+          ],
+          "doc": "診断レポートをMarkdownで出力"
+        },
+        {
+          "name": "run_health_loop",
+          "start": 437,
+          "end": 489,
+          "args": [
+            "project_path",
+            "max_rounds",
+            "auto_fix_fn",
+            "anchor"
+          ],
+          "doc": "\n    健康診断 → 自動修正 → 再診断 を最大 max_rounds 回繰り返す。\n    重大問題がなくなるか max_rounds に達したら停止。\n"
+        },
+        {
+          "name": "format_health_loop_report",
+          "start": 492,
+          "end": 521,
+          "args": [
+            "history"
+          ],
+          "doc": "ループ診断の履歴をMarkdownで出力"
+        }
+      ]
+    },
+    "internet.py": {
+      "path": "internet.py",
+      "role": "internet.py (8関数)",
+      "language": "python",
+      "line_count": 481,
+      "updated_at": "2026-03-11T01:28:07.883207",
+      "dependencies": [
+        "json.py",
+        "urllib.py",
+        "datetime.py",
+        "requests.py"
+      ],
+      "functions": [
+        {
+          "name": "get_current_datetime",
+          "start": 45,
+          "end": 75,
+          "args": [],
+          "doc": "\n    現在の日時情報を返す。\n    戻り値:\n    {\n        \"datetime_str\": \"2026年3月4日（水）午後3時45分\",\n "
+        },
+        {
+          "name": "search_duckduckgo",
+          "start": 82,
+          "end": 136,
+          "args": [
+            "query",
+            "k"
+          ],
+          "doc": "\n    DuckDuckGo Instant Answer API で検索する（無料・登録不要）。\n    戻り値:\n    {\n        \"succe"
+        },
+        {
+          "name": "search_wikipedia",
+          "start": 143,
+          "end": 211,
+          "args": [
+            "query",
+            "lang",
+            "sentences"
+          ],
+          "doc": "\n    Wikipedia API で概要を取得する（無料・登録不要）。\n    lang: \"ja\"=日本語, \"en\"=英語\n    戻り値:\n    {"
+        },
+        {
+          "name": "search_pypi",
+          "start": 218,
+          "end": 256,
+          "args": [
+            "package_name"
+          ],
+          "doc": "\n    PyPI JSON API でパッケージの最新バージョン・概要を取得する。\n    戻り値:\n    {\n        \"success\":    "
+        },
+        {
+          "name": "search_github",
+          "start": 263,
+          "end": 325,
+          "args": [
+            "query",
+            "language",
+            "kind",
+            "limit",
+            "token"
+          ],
+          "doc": "\n    GitHub Search API でリポジトリ・コードを検索する。\n    無料枠: 未認証=10回/分, token指定=30回/分\n\n    引"
+        },
+        {
+          "name": "web_fetch",
+          "start": 332,
+          "end": 368,
+          "args": [
+            "url",
+            "max_chars"
+          ],
+          "doc": "\n    指定URLのHTMLをプレーンテキストに変換して返す。\n    戻り値:\n    {\n        \"success\": bool,\n       "
+        },
+        {
+          "name": "smart_search",
+          "start": 381,
+          "end": 450,
+          "args": [
+            "query",
+            "github_token"
+          ],
+          "doc": "\n    クエリの内容を分析して最適な検索APIを自動選択して実行する。\n\n    戻り値:\n    {\n        \"source\":   str,   "
+        },
+        {
+          "name": "build_search_context",
+          "start": 457,
+          "end": 481,
+          "args": [
+            "query",
+            "github_token"
+          ],
+          "doc": "\n    AIのプロンプトに注入するための検索コンテキスト文字列を生成する。\n    engine.py の autonomous_dev / chat_wit"
+        }
+      ]
+    },
+    "knowledge_api.py": {
+      "path": "knowledge_api.py",
+      "role": "knowledge_api.py (10関数)",
+      "language": "python",
+      "line_count": 354,
+      "updated_at": "2026-03-11T01:28:07.887279",
+      "dependencies": [
+        "random.py",
+        "urllib.py",
+        "typing.py"
+      ],
+      "functions": [
+        {
+          "name": "fetch_wiki_summary",
+          "start": 42,
+          "end": 60,
+          "args": [
+            "query",
+            "lang",
+            "sentences"
+          ],
+          "doc": "\n    Wikipediaから要約を取得。\n    ゲームのNPCセリフ・アイテム説明・地名の由来に使う。\n    "
+        },
+        {
+          "name": "fetch_wiki_sections",
+          "start": 63,
+          "end": 79,
+          "args": [
+            "query",
+            "lang"
+          ],
+          "doc": "Wikipediaのセクション一覧を取得"
+        },
+        {
+          "name": "fetch_place_names",
+          "start": 113,
+          "end": 136,
+          "args": [
+            "genre",
+            "count"
+          ],
+          "doc": "\n    ジャンルに合った地名リストを返す。\n    オフライン版（プリセット）＋オンライン版（Open Notify等）の組み合わせ。\n    "
+        },
+        {
+          "name": "fetch_monster_data",
+          "start": 143,
+          "end": 180,
+          "args": [
+            "name_or_id"
+          ],
+          "doc": "\n    PokeAPIからモンスターデータを取得。\n    ローグライクの敵キャラ・タワーディフェンスの敵に活用。\n    "
+        },
+        {
+          "name": "generate_enemy_from_pokemon",
+          "start": 183,
+          "end": 207,
+          "args": [
+            "name_or_id",
+            "engine"
+          ],
+          "doc": "\n    PokeAPIのデータをもとにゲーム用の敵パラメータコードを生成。\n    "
+        },
+        {
+          "name": "fetch_npc_avatar_url",
+          "start": 219,
+          "end": 227,
+          "args": [
+            "seed",
+            "style"
+          ],
+          "doc": "\n    DiceBearでNPCアバターURLを生成（画像はDiceBearサーバーで生成）。\n    ゲーム内のNPC・プレイヤーアイコンに使える。\n   "
+        },
+        {
+          "name": "generate_npc_roster",
+          "start": 230,
+          "end": 235,
+          "args": [
+            "names",
+            "style"
+          ],
+          "doc": "NPC名リストからアバターURL付きNPCリストを生成"
+        },
+        {
+          "name": "fetch_real_weather",
+          "start": 242,
+          "end": 287,
+          "args": [
+            "lat",
+            "lon"
+          ],
+          "doc": "\n    Open-Meteoから現実の天気を取得。\n    ゲーム内の天候システムに現実の天気を反映できる。\n    デフォルトは東京。\n    "
+        },
+        {
+          "name": "weather_to_game_code",
+          "start": 290,
+          "end": 300,
+          "args": [
+            "weather",
+            "engine"
+          ],
+          "doc": "天気データをゲーム内コードに変換"
+        },
+        {
+          "name": "inject_knowledge",
+          "start": 307,
+          "end": 354,
+          "args": [
+            "goal",
+            "genre"
+          ],
+          "doc": "\n    目標に応じた無料API知識をコンテキストとしてプロンプトに注入。\n    engine.py から呼ばれる。\n    "
+        }
+      ]
+    },
+    "memory.py": {
+      "path": "memory.py",
+      "role": "記憶システム",
+      "language": "python",
+      "line_count": 361,
+      "updated_at": "2026-03-11T01:28:07.889299",
+      "dependencies": [
+        "pathlib.py",
+        "json.py",
+        "datetime.py",
+        "hashlib.py"
+      ],
+      "functions": [
+        {
+          "name": "_init_backend",
+          "start": 40,
+          "end": 75,
+          "args": [],
+          "doc": "利用可能な最良のバックエンドを初期化する"
+        },
+        {
+          "name": "_make_id",
+          "start": 85,
+          "end": 86,
+          "args": [
+            "key",
+            "content"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_tfidf_score",
+          "start": 89,
+          "end": 96,
+          "args": [
+            "query",
+            "text"
+          ],
+          "doc": "TF-IDFの超簡易版キーワードマッチスコア"
+        },
+        {
+          "name": "_vec_encode",
+          "start": 99,
+          "end": 106,
+          "args": [
+            "text"
+          ],
+          "doc": "ベクトル化（SentenceTransformerがない場合はNone）"
+        },
+        {
+          "name": "_json_load",
+          "start": 113,
+          "end": 121,
+          "args": [],
+          "doc": "JSONファイルからメモリを読み込む"
+        },
+        {
+          "name": "_json_save",
+          "start": 124,
+          "end": 130,
+          "args": [
+            "data"
+          ],
+          "doc": "メモリをJSONファイルに保存する"
+        },
+        {
+          "name": "store_memory",
+          "start": 137,
+          "end": 176,
+          "args": [
+            "key",
+            "text",
+            "meta"
+          ],
+          "doc": "テキストをメモリに保存（upsert）"
+        },
+        {
+          "name": "_json_fallback_store",
+          "start": 179,
+          "end": 200,
+          "args": [
+            "key",
+            "text",
+            "meta"
+          ],
+          "doc": "JSONファイルへのフォールバック保存"
+        },
+        {
+          "name": "retrieve_context",
+          "start": 207,
+          "end": 245,
+          "args": [
+            "query",
+            "k"
+          ],
+          "doc": "クエリに近い記憶を取得して結合して返す"
+        },
+        {
+          "name": "_json_retrieve",
+          "start": 248,
+          "end": 262,
+          "args": [
+            "query",
+            "k"
+          ],
+          "doc": "JSONバックエンドでのキーワード検索"
+        },
+        {
+          "name": "list_memories",
+          "start": 269,
+          "end": 290,
+          "args": [
+            "limit"
+          ],
+          "doc": "保存されている記憶の一覧を返す"
+        },
+        {
+          "name": "_json_list",
+          "start": 293,
+          "end": 302,
+          "args": [
+            "limit"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "delete_memory",
+          "start": 305,
+          "end": 334,
+          "args": [
+            "key_prefix"
+          ],
+          "doc": "指定キープレフィックスの記憶を削除（空文字=\"\"で全削除）"
+        },
+        {
+          "name": "get_memory_count",
+          "start": 337,
+          "end": 349,
+          "args": [],
+          "doc": "保存されている記憶の総件数"
+        },
+        {
+          "name": "get_backend_status",
+          "start": 352,
+          "end": 361,
+          "args": [],
+          "doc": "現在のバックエンド状態を返す（UIの診断表示用）"
+        }
+      ]
+    },
+    "pair_programmer.py": {
+      "path": "pair_programmer.py",
+      "role": "pair_programmer.py (9関数)",
+      "language": "python",
+      "line_count": 284,
+      "updated_at": "2026-03-11T01:28:07.892343",
+      "dependencies": [
+        "ollama.py",
+        "dataclasses.py",
+        "typing.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "__init__",
+          "start": 63,
+          "end": 74,
+          "args": [
+            "self",
+            "goal",
+            "anchor",
+            "save_path",
+            "model"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "start",
+          "start": 77,
+          "end": 81,
+          "args": [
+            "cls",
+            "goal",
+            "anchor",
+            "save_path",
+            "model"
+          ],
+          "doc": "新しいペアプログラミングセッションを開始する"
+        },
+        {
+          "name": "_call",
+          "start": 83,
+          "end": 100,
+          "args": [
+            "self",
+            "system",
+            "user",
+            "max_tokens"
+          ],
+          "doc": "Ollamaを呼ぶ内部ヘルパー"
+        },
+        {
+          "name": "_phase_design",
+          "start": 106,
+          "end": 131,
+          "args": [
+            "self",
+            "user_input"
+          ],
+          "doc": "設計フェーズ: 実装方針を提案する"
+        },
+        {
+          "name": "_phase_implement",
+          "start": 133,
+          "end": 159,
+          "args": [
+            "self",
+            "design_approved"
+          ],
+          "doc": "実装フェーズ: 承認された設計でコードを生成"
+        },
+        {
+          "name": "_phase_review",
+          "start": 161,
+          "end": 190,
+          "args": [
+            "self"
+          ],
+          "doc": "レビューフェーズ: 自分のコードを批評する"
+        },
+        {
+          "name": "_phase_refine",
+          "start": 192,
+          "end": 214,
+          "args": [
+            "self",
+            "user_instruction"
+          ],
+          "doc": "修正フェーズ: レビュー指摘を反映して修正"
+        },
+        {
+          "name": "respond",
+          "start": 220,
+          "end": 273,
+          "args": [
+            "self",
+            "user_input",
+            "action"
+          ],
+          "doc": "\n        ユーザーの入力またはアクションに応じてフェーズを進める。\n\n        action: \"approve\" / \"modify\" / \"s"
+        },
+        {
+          "name": "get_state",
+          "start": 275,
+          "end": 284,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "player.py": {
+      "path": "player.py",
+      "role": "プレイヤーキャラクター制御",
+      "language": "python",
+      "line_count": 38,
+      "updated_at": "2026-03-11T01:28:07.893374",
+      "dependencies": [
+        "typing.py",
+        "json.py"
+      ],
+      "functions": [
+        {
+          "name": "__init__",
+          "start": 8,
+          "end": 9,
+          "args": [
+            "self",
+            "data"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "start": 17,
+          "end": 18,
+          "args": [
+            "self",
+            "data"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "project_map.py": {
+      "path": "project_map.py",
+      "role": "project_map.py (17関数)",
+      "language": "python",
+      "line_count": 550,
+      "updated_at": "2026-03-11T01:28:07.898469",
+      "dependencies": [
+        "json.py",
+        "pathlib.py",
+        "typing.py",
+        "dataclasses.py",
+        "ast.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "scan_project",
+          "start": 81,
+          "end": 107,
+          "args": [
+            "project_path"
+          ],
+          "doc": "\n    プロジェクト全体をスキャンして地図を生成・保存する。\n    "
+        },
+        {
+          "name": "_scan_file",
+          "start": 110,
+          "end": 130,
+          "args": [
+            "full_path",
+            "rel_path"
+          ],
+          "doc": "1ファイルをスキャンしてFileEntryを返す"
+        },
+        {
+          "name": "_detect_lang",
+          "start": 133,
+          "end": 134,
+          "args": [
+            "ext"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_extract_functions",
+          "start": 137,
+          "end": 175,
+          "args": [
+            "src",
+            "lang"
+          ],
+          "doc": "関数一覧を抽出する"
+        },
+        {
+          "name": "_extract_dependencies",
+          "start": 178,
+          "end": 195,
+          "args": [
+            "src",
+            "lang",
+            "rel_path"
+          ],
+          "doc": "依存ファイルを抽出する"
+        },
+        {
+          "name": "_infer_role",
+          "start": 198,
+          "end": 234,
+          "args": [
+            "rel_path",
+            "funcs",
+            "src"
+          ],
+          "doc": "ファイルの役割を1行で推測する"
+        },
+        {
+          "name": "_brain_dir",
+          "start": 241,
+          "end": 244,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_save_map",
+          "start": 247,
+          "end": 272,
+          "args": [
+            "project_path",
+            "pmap"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_load_map",
+          "start": 275,
+          "end": 307,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "update_file_entry",
+          "start": 314,
+          "end": 330,
+          "args": [
+            "project_path",
+            "file_full_path"
+          ],
+          "doc": "\n    1ファイルが書き換えられたときに地図を部分更新する。\n    フルスキャンより高速。engine.pyのファイル書き込み直後に呼ぶ。\n    "
+        },
+        {
+          "name": "store_intent",
+          "start": 337,
+          "end": 356,
+          "args": [
+            "project_path",
+            "file_rel_path",
+            "intent"
+          ],
+          "doc": "\n    ファイルの「意図」を記録する。\n    intent = {\n        \"role\":        \"このファイルが何をするか\",\n     "
+        },
+        {
+          "name": "get_intent",
+          "start": 359,
+          "end": 362,
+          "args": [
+            "project_path",
+            "file_rel_path"
+          ],
+          "doc": "ファイルの意図を取得する"
+        },
+        {
+          "name": "_load_intent_store",
+          "start": 365,
+          "end": 373,
+          "args": [
+            "project_path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "auto_store_intent",
+          "start": 376,
+          "end": 413,
+          "args": [
+            "project_path",
+            "file_rel_path",
+            "code",
+            "task_desc",
+            "model"
+          ],
+          "doc": "\n    ファイル生成直後にAIが意図を自動抽出して記録する。\n    engine.pyのprocess_task完了後に呼ぶ。\n    "
+        },
+        {
+          "name": "get_map_context",
+          "start": 420,
+          "end": 504,
+          "args": [
+            "project_path",
+            "task_desc",
+            "target_file"
+          ],
+          "doc": "\n    タスクに関連する地図情報をAIへのコンテキストとして返す。\n    engine.pyのprocess_task冒頭で呼ぶ。\n    これにより「コー"
+        },
+        {
+          "name": "format_map_for_sidebar",
+          "start": 511,
+          "end": 540,
+          "args": [
+            "project_path"
+          ],
+          "doc": "\n    サイドバー表示用のデータを返す。\n    戻り値: {\"files\": [...], \"total_lines\": int, \"total_files"
+        },
+        {
+          "name": "get_map_stats",
+          "start": 543,
+          "end": 550,
+          "args": [
+            "project_path"
+          ],
+          "doc": "地図の統計情報を1行で返す（ヘッダー表示用）"
+        }
+      ]
+    },
+    "project_templates.py": {
+      "path": "project_templates.py",
+      "role": "project_templates.py (2関数)",
+      "language": "python",
+      "line_count": 445,
+      "updated_at": "2026-03-11T01:28:07.899488",
+      "dependencies": [
+        "src.py",
+        "datetime.py",
+        "pathlib.py",
+        "pygame.py"
+      ],
+      "functions": [
+        {
+          "name": "create_project",
+          "start": 371,
+          "end": 436,
+          "args": [
+            "project_name",
+            "template_key",
+            "output_path"
+          ],
+          "doc": "\n    テンプレートからプロジェクトを生成する。\n    戻り値: {\"success\": bool, \"created_files\": list, \"pat"
+        },
+        {
+          "name": "get_templates",
+          "start": 439,
+          "end": 445,
+          "args": [],
+          "doc": "テンプレート一覧を返す（UI表示用）"
+        }
+      ]
+    },
+    "sandbox.py": {
+      "path": "sandbox.py",
+      "role": "sandbox.py (4関数)",
+      "language": "python",
+      "line_count": 117,
+      "updated_at": "2026-03-11T01:28:07.900501",
+      "dependencies": [
+        "subprocess.py",
+        "sys.py",
+        "tempfile.py",
+        "ast.py"
+      ],
+      "functions": [
+        {
+          "name": "_check_syntax",
+          "start": 21,
+          "end": 27,
+          "args": [
+            "code"
+          ],
+          "doc": "構文チェック。エラーがあればエラーメッセージを返す。なければ None。"
+        },
+        {
+          "name": "_generate_wrapped_code",
+          "start": 30,
+          "end": 42,
+          "args": [
+            "original_code"
+          ],
+          "doc": "実行コードをラップしてリソース制限を内側からかける。"
+        },
+        {
+          "name": "_limits",
+          "start": 45,
+          "end": 49,
+          "args": [],
+          "doc": "Linux/macOS 用プロセスレベルリソース制限（preexec_fn 用）。"
+        },
+        {
+          "name": "run_safe",
+          "start": 52,
+          "end": 117,
+          "args": [
+            "code",
+            "timeout"
+          ],
+          "doc": "\n    コードを安全なサブプロセスで実行する。\n\n    処理フロー:\n      1. 構文チェック（ast.parse）\n      2. 一時ファイルに"
+        }
+      ]
+    },
+    "self_improver.py": {
+      "path": "self_improver.py",
+      "role": "self_improver.py (4関数)",
+      "language": "python",
+      "line_count": 261,
+      "updated_at": "2026-03-11T01:28:07.901516",
+      "dependencies": [
+        "datetime.py",
+        "dataclasses.py"
+      ],
+      "functions": [
+        {
+          "name": "analyze_self",
+          "start": 37,
+          "end": 105,
+          "args": [
+            "engine_path"
+          ],
+          "doc": "\n    engine.pyを自己分析して問題点・改善機会を返す。\n    "
+        },
+        {
+          "name": "generate_proposals",
+          "start": 108,
+          "end": 202,
+          "args": [
+            "problems",
+            "engine_path",
+            "model"
+          ],
+          "doc": "\n    検出した問題点からAIが改善提案を生成する。\n    "
+        },
+        {
+          "name": "apply_proposal",
+          "start": 205,
+          "end": 248,
+          "args": [
+            "proposal"
+          ],
+          "doc": "\n    承認済みの改善提案をengine.pyに適用する。\n    必ずバックアップを取ってから適用する。\n    "
+        },
+        {
+          "name": "format_proposal",
+          "start": 251,
+          "end": 261,
+          "args": [
+            "p"
+          ],
+          "doc": "提案をMarkdownで表示"
+        }
+      ]
+    },
+    "session_restore.py": {
+      "path": "session_restore.py",
+      "role": "session_restore.py (5関数)",
+      "language": "python",
+      "line_count": 128,
+      "updated_at": "2026-03-11T01:28:07.902529",
+      "dependencies": [
+        "pathlib.py",
+        "json.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "save_session",
+          "start": 36,
+          "end": 63,
+          "args": [
+            "state"
+          ],
+          "doc": "Streamlitのst.session_stateを永続化する"
+        },
+        {
+          "name": "load_session",
+          "start": 66,
+          "end": 82,
+          "args": [],
+          "doc": "\n    保存済みセッションを読み込んで辞書で返す。\n    セッションファイルがなければ空辞書を返す。\n    "
+        },
+        {
+          "name": "restore_to_streamlit",
+          "start": 85,
+          "end": 97,
+          "args": [
+            "state",
+            "loaded"
+          ],
+          "doc": "\n    load_session()の結果をStreamlitのsession_stateに適用する。\n    既に値がある場合は上書きしない（初回のみ復元）"
+        },
+        {
+          "name": "get_session_info",
+          "start": 100,
+          "end": 118,
+          "args": [],
+          "doc": "セッションファイルの情報を返す（UI表示用）"
+        },
+        {
+          "name": "clear_session",
+          "start": 121,
+          "end": 128,
+          "args": [],
+          "doc": "セッションファイルを削除"
+        }
+      ]
+    },
+    "task_decomposer.py": {
+      "path": "task_decomposer.py",
+      "role": "データ管理",
+      "language": "python",
+      "line_count": 302,
+      "updated_at": "2026-03-11T01:28:07.905594",
+      "dependencies": [
+        "json.py",
+        "dataclasses.py",
+        "typing.py",
+        "datetime.py"
+      ],
+      "functions": [
+        {
+          "name": "decompose",
+          "start": 151,
+          "end": 174,
+          "args": [
+            "goal",
+            "anchor",
+            "engine",
+            "genre",
+            "use_ai"
+          ],
+          "doc": "\n    ゴール文字列からタスクリストを自動生成する。\n    use_ai=True の場合 Ollama で動的生成、False の場合テンプレートを使う。"
+        },
+        {
+          "name": "_decompose_with_ai",
+          "start": 177,
+          "end": 230,
+          "args": [
+            "goal",
+            "anchor",
+            "engine",
+            "genre"
+          ],
+          "doc": "Ollamaを使ってタスクリストを動的生成"
+        },
+        {
+          "name": "_decompose_with_template",
+          "start": 233,
+          "end": 258,
+          "args": [
+            "goal",
+            "engine",
+            "genre",
+            "plan"
+          ],
+          "doc": "テンプレートからタスクリストを生成"
+        },
+        {
+          "name": "auto_queue",
+          "start": 261,
+          "end": 302,
+          "args": [
+            "plan",
+            "autonomous_dev_fn",
+            "save_path",
+            "anchor",
+            "max_parallel"
+          ],
+          "doc": "\n    タスクを依存順に自動実行するジェネレータ。\n    各ステップで (task, result) を yield する。\n    Streamlit の"
+        },
+        {
+          "name": "done_count",
+          "start": 42,
+          "end": 43,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "total",
+          "start": 45,
+          "end": 46,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "progress_pct",
+          "start": 48,
+          "end": 49,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "next_tasks",
+          "start": 51,
+          "end": 58,
+          "args": [
+            "self"
+          ],
+          "doc": "依存が全て完了している未着手タスクを返す"
+        },
+        {
+          "name": "to_dict",
+          "start": 60,
+          "end": 71,
+          "args": [
+            "self"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "from_dict",
+          "start": 74,
+          "end": 84,
+          "args": [
+            "cls",
+            "d"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "save",
+          "start": 86,
+          "end": 89,
+          "args": [
+            "self",
+            "path"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "load",
+          "start": 92,
+          "end": 96,
+          "args": [
+            "cls",
+            "path"
+          ],
+          "doc": ""
+        }
+      ]
+    },
+    "viz.py": {
+      "path": "viz.py",
+      "role": "viz.py (6関数)",
+      "language": "python",
+      "line_count": 283,
+      "updated_at": "2026-03-11T01:28:07.907625",
+      "dependencies": [
+        "datetime.py",
+        "pathlib.py"
+      ],
+      "functions": [
+        {
+          "name": "_get_py_imports",
+          "start": 21,
+          "end": 35,
+          "args": [
+            "filepath"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "_get_gd_imports",
+          "start": 38,
+          "end": 46,
+          "args": [
+            "filepath"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "build_dep_graph_svg",
+          "start": 49,
+          "end": 153,
+          "args": [
+            "project_path",
+            "max_nodes"
+          ],
+          "doc": "\n    プロジェクトの依存グラフをSVGで返す。\n    ノード: ファイル\n    エッジ: import/preload の依存関係\n    色分け: p"
+        },
+        {
+          "name": "_svg_message",
+          "start": 156,
+          "end": 160,
+          "args": [
+            "msg"
+          ],
+          "doc": ""
+        },
+        {
+          "name": "get_git_timeline",
+          "start": 167,
+          "end": 215,
+          "args": [
+            "project_path",
+            "n"
+          ],
+          "doc": "\n    Gitのコミット履歴を取得してタイムラインデータを返す。\n    戻り値: [{\"hash\": str, \"date\": str, \"msg\": st"
+        },
+        {
+          "name": "build_evolution_svg",
+          "start": 218,
+          "end": 283,
+          "args": [
+            "timeline"
+          ],
+          "doc": "\n    コード進化タイムラインをSVGバーチャートで返す。\n    横軸: 時系列 / 縦軸: 追加行数（緑）削除行数（赤）\n    "
+        }
+      ]
+    }
+  }
+}

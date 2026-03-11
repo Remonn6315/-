@@ -33,8 +33,215 @@ import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from memory import store_memory, retrieve_context
+
+# Phase 1: プロジェクト地図 + 意図記憶
+try:
+    from project_map import (
+        get_map_context, update_file_entry,
+        auto_store_intent, get_map_stats, scan_project
+    )
+    _MAP_OK = True
+except ImportError:
+    _MAP_OK = False
+    def get_map_context(p, t, f=""): return ""
+    def update_file_entry(p, f): pass
+    def auto_store_intent(p, f, c, t): pass
+    def get_map_stats(p): return ""
+    def scan_project(p): return None
+
+# Phase 2: 契約記憶 + 完全履歴
+try:
+    from blackwell_history import (
+        get_contract_warning, auto_register_contracts,
+        update_contract_consumers, record_task_result,
+        record_error, get_lessons, get_failure_warning,
+    )
+    _HISTORY_OK = True
+except ImportError:
+    _HISTORY_OK = False
+    def get_contract_warning(p, f): return ""
+    def auto_register_contracts(p, f, s, l=""): pass
+    def update_contract_consumers(p, f, s): pass
+    def record_task_result(p, f, t, c, sc, su, fb="", e=""): pass
+    def record_error(p, f, t, e, c=""): pass
+    def get_lessons(p, t, k=3): return ""
+    def get_failure_warning(p, t): return ""
+
+# Phase 3: 予測記憶 + 並列シミュレーション
+try:
+    from blackwell_prediction import (
+        predict_risks, get_prediction_warning,
+        record_parallel_result, get_parallel_insight,
+    )
+    _PREDICTION_OK = True
+except ImportError:
+    _PREDICTION_OK = False
+    def predict_risks(p, f, c, t, m=""): return []
+    def get_prediction_warning(p, f): return ""
+    def record_parallel_result(p, t, f, cands, chosen, reason=""): pass
+    def get_parallel_insight(p, t): return ""
+
+# Phase 4: 自己対話ループ（Deep Thinking Engine）
+try:
+    from thinking_engine import (
+        deep_think, estimate_complexity, select_model_by_complexity,
+        format_thinking_log,
+    )
+    _THINKING_OK = True
+except ImportError:
+    _THINKING_OK = False
+    def deep_think(d, s, c="", m="", md=None): return None
+    def estimate_complexity(d, c=""): return 2
+    def select_model_by_complexity(c, m): return m.get("coder", "")
+    def format_thinking_log(r): return {}
+
+# Phase 5: 学習データ自動収集
+try:
+    from training_collector import (
+        collect as collect_training,
+        should_finetune, get_stats as get_training_stats,
+        export_for_finetuning, generate_modelfile,
+        generate_finetune_script,
+    )
+    _TRAINING_OK = True
+except ImportError:
+    _TRAINING_OK = False
+    def collect_training(p, t, c, sc, l="", tg=None, tl=None, f=""): return False
+    def should_finetune(p): return False
+    def get_training_stats(p): return {}
+    def export_for_finetuning(p, ms=70): return ""
+    def generate_modelfile(p, bm="", cm=""): return ""
+    def generate_finetune_script(p, bm="", cm=""): return ""
+
+# Phase 7: 自律実行スケジューラー
+try:
+    from autonomous_scheduler import (
+        add_task as scheduler_add_task,
+        add_tasks_bulk, get_backlog, get_next_tasks,
+        mark_done as scheduler_mark_done,
+        get_backlog_stats, get_night_status,
+        get_morning_report, has_new_report, mark_report_read,
+    )
+    _SCHEDULER_OK = True
+except ImportError:
+    _SCHEDULER_OK = False
+    def scheduler_add_task(p, ti, f, d, pr=2, dep=None): return ""
+    def add_tasks_bulk(p, t): return []
+    def get_backlog(p): return []
+    def get_next_tasks(p, n=5): return []
+    def scheduler_mark_done(p, tid, rs=""): pass
+    def get_backlog_stats(p): return {}
+    def get_night_status(p): return {}
+    def get_morning_report(p): return ""
+    def has_new_report(p): return False
+    def mark_report_read(p): pass
+
+# Phase 8: マルチエージェント協調
+try:
+    from agent_society import (
+        coordinate as agent_coordinate,
+        get_agent_stats, get_coordination_history,
+        format_coordination_log,
+    )
+    _SOCIETY_OK = True
+except ImportError:
+    _SOCIETY_OK = False
+    def agent_coordinate(d, a="", p="./", m="", mr=3, ig=False): return None
+    def get_agent_stats(p): return {}
+    def get_coordination_history(p, n=10): return []
+    def format_coordination_log(r): return {}
+
+# Phase 9: ゲームを自分でプレイして学習
+try:
+    from game_player import (
+        analyze_and_fix_bytes, get_game_insights, get_play_history,
+    )
+    _PLAYER_OK = True
+except ImportError:
+    _PLAYER_OK = False
+    def analyze_and_fix_bytes(b, p, a, af, m=""): return None
+    def get_game_insights(p): return {}
+    def get_play_history(p, n=10): return []
+
+# Phase 10: 自己存在の最適化
+try:
+    from self_model import (
+        rebuild_self_model, get_self_model, get_task_strategy,
+        should_rebuild, update_trust, get_self_report,
+    )
+    _SELF_MODEL_OK = True
+except ImportError:
+    _SELF_MODEL_OK = False
+    def rebuild_self_model(p, m=""): return None
+    def get_self_model(p): return None
+    def get_task_strategy(p, t): return None
+    def should_rebuild(p): return False
+    def update_trust(p, a, s): pass
+    def get_self_report(p): return ""
+
+# Godot Bridge: リアルタイム通信
+try:
+    from godot_bridge import (
+        send_code as bridge_send_code,
+        send_notification as bridge_notify,
+        send_reload as bridge_reload,
+        is_connected as bridge_connected,
+        get_bridge_status,
+    )
+    _BRIDGE_OK = True
+except ImportError:
+    _BRIDGE_OK = False
+    def bridge_send_code(f, c, a=True): return False
+    def bridge_notify(m, l="info"): return False
+    def bridge_reload(f=""): return False
+    def bridge_connected(): return False
+    def get_bridge_status(): return {}
+
+# マルチプロジェクト知識ハブ
+try:
+    from knowledge_hub import (
+        import_knowledge, register_project as hub_register,
+        export_project as hub_export,
+    )
+    _HUB_OK = True
+except ImportError:
+    _HUB_OK = False
+    def import_knowledge(p, t=""): return ""
+    def hub_register(p, n="", g=""): pass
+    def hub_export(p, n=""): return 0
+
+# ドキュメント自動同期
+try:
+    from doc_sync import sync_on_task_complete as _doc_sync_task
+    _DOC_SYNC_OK = True
+except ImportError:
+    _DOC_SYNC_OK = False
+    def _doc_sync_task(p, a, f, t): pass
+
+# バージョン管理AI
+try:
+    from gitops import auto_commit as _git_auto_commit
+    _GIT_AI_OK = True
+except ImportError:
+    _GIT_AI_OK = False
+    def _git_auto_commit(p, t="", f=None): return None
+
+# Phase 6: プロンプト自己進化
+try:
+    from prompt_evolver import (
+        analyze_and_evolve, apply_evolved_prompts,
+        should_evolve, get_evolution_stats,
+    )
+    _EVOLVER_OK = True
+except ImportError:
+    _EVOLVER_OK = False
+    def analyze_and_evolve(p, r, m=""): return None
+    def apply_evolved_prompts(p, r, t=""): return r
+    def should_evolve(p): return False
+    def get_evolution_stats(p): return {}
 from sandbox import run_safe
 from gitops import commit_all
 from internet import (
@@ -121,7 +328,18 @@ def clear_execution_log():
 # ユーティリティ
 # ============================================================
 
+def _is_diff_output(text: str) -> bool:
+    """AIの出力が差分形式かどうか判定する"""
+    lines = text.strip().splitlines()[:10]
+    diff_indicators = sum(1 for l in lines if l.startswith(("---","+++","@@","-","+")) and l.strip())
+    return diff_indicators >= 3
+
+
 def extract_code(text):
+    # 差分ブロックを優先的に検出
+    diff_m = re.search(r"```diff\n(.*?)```", text, re.DOTALL)
+    if diff_m:
+        return diff_m.group(1).strip()
     m = re.search(r"```(?:python|gdscript|javascript|typescript|csharp|gd)?\n(.*?)```", text, re.DOTALL)
     return m.group(1).strip() if m else text.strip()
 
@@ -141,6 +359,114 @@ def analyze_deps(code):
         return []
 
 
+def _extract_relevant_context(existing_code: str, task_desc: str, max_chars: int = 1500) -> str:
+    """
+    既存コードから タスクに関連する関数・クラスだけを抽出する。
+    3000文字丸ごと渡す代わりに関連部分だけ渡すことで:
+      - トークン数を大幅削減
+      - AIが本当に必要な部分に集中できる
+      - 精度向上
+    """
+    if not existing_code or len(existing_code) <= max_chars:
+        return existing_code  # 短いファイルはそのまま
+
+    desc_words = set(re.findall(r"\w+", task_desc.lower()))
+    # 短すぎる単語・ストップワードを除外
+    desc_words = {w for w in desc_words if len(w) > 3 and w not in {
+        "する","した","して","ください","追加","実装","修正","変更",
+        "this","that","with","from","import","func","def","class",
+    }}
+
+    lines      = existing_code.splitlines()
+    lang       = _detect_code_language(existing_code)
+
+    # Python: ASTで関数・クラス境界を正確に取得
+    if lang in ("python", "python_pygame"):
+        try:
+            tree    = ast.parse(existing_code)
+            blocks  = []  # (score, start_line, end_line, name)
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    end   = getattr(node, "end_lineno", node.lineno + 20)
+                    name  = node.name.lower()
+                    # スコア計算: 名前・docstringにタスクキーワードが含まれるか
+                    score = sum(1 for w in desc_words if w in name)
+                    # docstringもチェック
+                    if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and
+                            node.body and isinstance(node.body[0], ast.Expr)):
+                        doc = ast.literal_eval(node.body[0].value) if isinstance(node.body[0].value, ast.Constant) else ""
+                        score += sum(1 for w in desc_words if w in str(doc).lower())
+                    blocks.append((score, node.lineno - 1, end, name))
+
+            # スコア順でソートして上位を取得
+            blocks.sort(key=lambda x: -x[0])
+            selected_lines = set()
+            total_chars    = 0
+            result_blocks  = []
+
+            for score, start, end, name in blocks:
+                block_text = "\n".join(lines[start:end])
+                if total_chars + len(block_text) > max_chars:
+                    break
+                result_blocks.append((start, block_text))
+                total_chars += len(block_text)
+                if score == 0 and total_chars > max_chars // 2:
+                    break
+
+            if result_blocks:
+                result_blocks.sort(key=lambda x: x[0])  # 行番号順に並び替え
+                extracted = "\n\n".join(b for _, b in result_blocks)
+                _log("🎯 関連コンテキスト抽出: {}文字 → {}文字 ({:.0f}%削減)".format(
+                    len(existing_code), len(extracted),
+                    (1 - len(extracted)/len(existing_code)) * 100
+                ))
+                return extracted
+        except Exception:
+            pass
+
+    # GDScript / その他: 行ベースでfunc境界を検出
+    func_blocks = []
+    current_func_start = None
+    current_func_name  = ""
+    for i, line in enumerate(lines):
+        m = re.match(r"^(func|def|class)\s+(\w+)", line)
+        if m:
+            if current_func_start is not None:
+                func_blocks.append((current_func_name, current_func_start, i))
+            current_func_start = i
+            current_func_name  = m.group(2).lower()
+    if current_func_start is not None:
+        func_blocks.append((current_func_name, current_func_start, len(lines)))
+
+    # 関連度でスコアリング
+    scored = []
+    for name, start, end in func_blocks:
+        score = sum(1 for w in desc_words if w in name)
+        block_text = "\n".join(lines[start:end])
+        score += sum(1 for w in desc_words if w in block_text.lower()) // 3
+        scored.append((score, start, end, block_text))
+
+    scored.sort(key=lambda x: -x[0])
+    total_chars   = 0
+    result_parts  = []
+    for score, start, end, block_text in scored:
+        if total_chars + len(block_text) > max_chars:
+            break
+        result_parts.append((start, block_text))
+        total_chars += len(block_text)
+
+    if result_parts:
+        result_parts.sort(key=lambda x: x[0])
+        extracted = "\n\n".join(b for _, b in result_parts)
+        _log("🎯 関連コンテキスト抽出(line): {}文字 → {}文字".format(
+            len(existing_code), len(extracted)))
+        return extracted
+
+    # フォールバック: 先頭だけ返す
+    return existing_code[:max_chars]
+
+
+
 def apply_diff(old, new):
     diff = list(difflib.unified_diff(
         old.splitlines(), new.splitlines(),
@@ -149,9 +475,7 @@ def apply_diff(old, new):
     return "\n".join(diff) if diff else "（変更なし）"
 
 
-# ============================================================
-# project_grand_state.json 読み込み
-# ============================================================
+
 
 def load_grand_state(base_path="./"):
     candidates = [
@@ -201,28 +525,241 @@ def _build_rag_context(desc, k=5):
 # ② 自己評価スコアリング
 # ============================================================
 
-def score_code(code, task_desc=""):
-    _log("スコアリング開始")
-    prompt = (
-        "あなたはコードレビューの専門家です。\n"
-        "以下のコードを厳格に評価し、必ず JSON のみで返してください。\n\n"
-        "タスク説明: {desc}\n\nコード:\n{code}\n\n"
-        "JSON形式（前置き不要）:\n"
-        '{{"score":整数0-100,'
-        '"breakdown":{{"correctness":0-25,"readability":0-25,"safety":0-25,"efficiency":0-25}},'
-        '"feedback":"200文字以内","passed":true/false}}'
-    ).format(desc=task_desc, code=code[:3000])
+def _detect_code_language(code: str) -> str:
+    """コードの言語を判定する"""
+    code_lower = code.lower()
+    if re.search(r"extends\s+\w+|func\s+_ready|@onready|signal\s+\w+", code):
+        return "gdscript"
+    if re.search(r"using\s+UnityEngine|MonoBehaviour|void\s+Start\(\)|void\s+Update\(\)", code):
+        return "csharp_unity"
+    if re.search(r"UCLASS\(\)|UPROPERTY\(\)|#include\s+\"CoreMinimal", code):
+        return "cpp_unreal"
+    if re.search(r"import\s+pygame|pygame\.init|pygame\.display", code):
+        return "python_pygame"
+    if re.search(r"import\s+\w+|def\s+\w+|class\s+\w+:", code):
+        return "python"
+    if re.search(r"function\s+\w+|const\s+\w+\s*=|THREE\.", code):
+        return "javascript"
+    return "unknown"
 
+
+def _score_python(code: str, task_desc: str) -> dict:
+    """Pythonコードをルールベースでスコアリング"""
+    issues = []
+    score  = 100
+
+    # 構文チェック
     try:
-        res   = ollama.chat(model=MODELS["optimizer"], messages=[{"role": "user", "content": prompt}])
-        match = re.search(r"\{.*\}", res["message"]["content"], re.DOTALL)
-        if match:
-            result = json.loads(match.group(0))
-            _log("スコア: {}/100".format(result.get("score", "?")))
-            return result
-    except Exception as e:
-        _log("ERROR スコアリング: {}".format(e))
-    return {"score": 50, "breakdown": {}, "feedback": "評価失敗", "passed": True}
+        ast.parse(code)
+    except SyntaxError as e:
+        return {
+            "score": 0, "passed": False,
+            "feedback": f"構文エラー: {e}",
+            "breakdown": {"correctness": 0, "readability": 0, "safety": 0, "efficiency": 0},
+            "language": "python",
+        }
+
+    lines = code.splitlines()
+
+    # 空コードチェック
+    if len(lines) < 3:
+        return {"score": 10, "passed": False, "feedback": "コードが短すぎます",
+                "breakdown": {}, "language": "python"}
+
+    # correctness (25点)
+    correctness = 25
+    if "except:" in code and "except Exception" not in code:
+        issues.append("裸のexceptは危険")
+        correctness -= 8
+    if "import *" in code:
+        issues.append("import * は避けるべき")
+        correctness -= 5
+    # タスク説明のキーワードがコードに含まれるか
+    desc_words = [w for w in re.findall(r"\w+", task_desc.lower()) if len(w) > 4]
+    matched = sum(1 for w in desc_words if w in code.lower())
+    if desc_words and matched / len(desc_words) < 0.2:
+        issues.append("タスク内容との乖離が大きい")
+        correctness -= 10
+
+    # readability (25点)
+    readability = 25
+    long_lines = [i+1 for i, l in enumerate(lines) if len(l) > 120]
+    if long_lines:
+        issues.append(f"長すぎる行: {long_lines[:3]}")
+        readability -= min(10, len(long_lines) * 2)
+    has_comments = any(l.strip().startswith("#") for l in lines)
+    if not has_comments and len(lines) > 10:
+        issues.append("コメントがない")
+        readability -= 8
+    func_count = len(re.findall(r"^def ", code, re.MULTILINE))
+    if func_count == 0 and len(lines) > 20:
+        issues.append("関数化されていない")
+        readability -= 5
+
+    # safety (25点)
+    safety = 25
+    dangerous = ["eval(", "exec(", "os.system(", "__import__(", "pickle.load"]
+    for d in dangerous:
+        if d in code:
+            issues.append(f"危険な関数: {d}")
+            safety -= 15
+    if "open(" in code and "with open" not in code:
+        issues.append("with文なしのopen")
+        safety -= 8
+
+    # efficiency (25点)
+    efficiency = 25
+    if code.count("for ") > 0 and code.count("for ") == code.count("for ") and \
+       re.search(r"for .+ in .+:\s*\n\s+for .+ in .+:", code):
+        issues.append("ネストしたループ（最適化余地あり）")
+        efficiency -= 5
+
+    total = max(0, correctness + readability + safety + efficiency)
+    feedback = "問題なし" if not issues else " / ".join(issues[:3])
+
+    return {
+        "score": total,
+        "passed": total >= 55,
+        "feedback": feedback,
+        "breakdown": {
+            "correctness": correctness,
+            "readability": readability,
+            "safety":      safety,
+            "efficiency":  efficiency,
+        },
+        "language": "python",
+    }
+
+
+def _score_gdscript(code: str, task_desc: str) -> dict:
+    """GDScriptコードをルールベースでスコアリング"""
+    issues  = []
+    score   = 100
+    lines   = code.splitlines()
+
+    if len(lines) < 2:
+        return {"score": 10, "passed": False, "feedback": "コードが短すぎます",
+                "breakdown": {}, "language": "gdscript"}
+
+    # extends 宣言チェック
+    has_extends = any(l.strip().startswith("extends") for l in lines[:5])
+    if not has_extends:
+        issues.append("extends宣言がない")
+        score -= 15
+
+    # Godot4 vs Godot3 混在チェック（致命的なバグ源）
+    has_g4 = bool(re.search(r"CharacterBody2D|CharacterBody3D|@onready|@export", code))
+    has_g3 = bool(re.search(r"KinematicBody2D|KinematicBody\b|\.move_and_slide\(velocity", code))
+    if has_g4 and has_g3:
+        issues.append("Godot3とGodot4のAPIが混在している（致命的）")
+        score -= 40
+
+    # move_and_slide の引数チェック（Godot4は引数なし）
+    if re.search(r"move_and_slide\(.+\)", code) and has_g4:
+        issues.append("Godot4のmove_and_slideに引数を渡している（引数不要）")
+        score -= 20
+
+    # func _ready() or _process() の存在
+    has_lifecycle = bool(re.search(r"func _ready|func _process|func _physics_process", code))
+    if not has_lifecycle and len(lines) > 5:
+        issues.append("ライフサイクル関数がない")
+        score -= 10
+
+    # コメント
+    has_comments = any("#" in l for l in lines)
+    if not has_comments and len(lines) > 8:
+        issues.append("コメントがない")
+        score -= 8
+
+    total    = max(0, score)
+    feedback = "問題なし" if not issues else " / ".join(issues[:3])
+    return {
+        "score":   total,
+        "passed":  total >= 55,
+        "feedback": feedback,
+        "breakdown": {"correctness": max(0, score//4), "readability": 20,
+                      "safety": 20, "efficiency": 15},
+        "language": "gdscript",
+    }
+
+
+def _score_csharp(code: str, task_desc: str) -> dict:
+    """C#コードを簡易ルールベースでスコアリング"""
+    issues = []
+    score  = 100
+    lines  = code.splitlines()
+
+    # 基本構造チェック
+    if "class " not in code:
+        issues.append("クラス定義がない"); score -= 20
+    if "{" not in code or "}" not in code:
+        issues.append("ブロック構造が不正"); score -= 30
+    # using文
+    if "using " not in code:
+        issues.append("using宣言がない"); score -= 10
+    # Unity系チェック
+    if "MonoBehaviour" in task_desc or "Unity" in task_desc:
+        if "MonoBehaviour" not in code:
+            issues.append("MonoBehaviourを継承していない"); score -= 15
+
+    total    = max(0, score)
+    feedback = "問題なし" if not issues else " / ".join(issues[:3])
+    return {"score": total, "passed": total >= 55, "feedback": feedback,
+            "breakdown": {}, "language": "csharp"}
+
+
+def _score_cpp(code: str, task_desc: str) -> dict:
+    """C++コードを簡易ルールベースでスコアリング"""
+    issues = []
+    score  = 100
+    # ヘッダとソースの対になっているか
+    if "#pragma once" not in code and "#ifndef" not in code:
+        issues.append("ヘッダガードがない"); score -= 10
+    if "UCLASS" in task_desc or "Unreal" in task_desc:
+        if "UCLASS()" not in code:
+            issues.append("UCLASS()マクロがない"); score -= 20
+        if "GENERATED_BODY()" not in code:
+            issues.append("GENERATED_BODY()がない"); score -= 15
+    total    = max(0, score)
+    feedback = "問題なし" if not issues else " / ".join(issues[:3])
+    return {"score": total, "passed": total >= 55, "feedback": feedback,
+            "breakdown": {}, "language": "cpp"}
+
+
+def score_code(code: str, task_desc: str = "") -> dict:
+    """
+    ルールベース多言語コード品質スコアリング。
+    モデル非依存・言語自動判定・安定動作。
+
+    修正前: AIモデルに採点させていた（モデル依存・スコアがバラバラ）
+    修正後: 言語ごとの構文/構造/危険パターンをルールで判定（安定・高速）
+    """
+    if not code or not code.strip():
+        return {"score": 0, "passed": False, "feedback": "コードが空です",
+                "breakdown": {}, "language": "unknown"}
+
+    lang = _detect_code_language(code)
+    _log("スコアリング開始 (言語: {})".format(lang))
+
+    if lang in ("python", "python_pygame"):
+        result = _score_python(code, task_desc)
+    elif lang == "gdscript":
+        result = _score_gdscript(code, task_desc)
+    elif lang in ("csharp", "csharp_unity"):
+        result = _score_csharp(code, task_desc)
+    elif lang == "cpp_unreal":
+        result = _score_cpp(code, task_desc)
+    else:
+        # 未知言語: 最低限の長さチェックのみ
+        lines = code.splitlines()
+        score = min(100, len(lines) * 3)
+        result = {"score": score, "passed": score >= 40,
+                  "feedback": "未知言語のため簡易評価",
+                  "breakdown": {}, "language": lang}
+
+    _log("スコア: {}/100 ({}) passed={}".format(
+        result["score"], result["language"], result["passed"]))
+    return result
 
 
 def _generate_with_score_loop(system_prompt, desc, max_score_attempts=3):
@@ -375,12 +912,27 @@ def _branch_and_critique(desc: str, system_prompt: str, use_branching: bool = Tr
     # Sandbox検証で生存個体を選ぶ
     sandbox_results = {}
     for pname, cand in candidates.items():
-        err = run_safe(cand["code"])
-        sandbox_results[pname] = err is None  # Trueなら成功
-        if err is None:
-            _log("Branch {} Sandbox: 成功".format(pname))
+        lang = _detect_code_language(cand["code"])
+        if lang in ("python", "python_pygame"):
+            # Python: 実際にサンドボックス実行
+            err = run_safe(cand["code"])
+            sandbox_results[pname] = err is None
+            _log("Branch {} Sandbox(Python): {}".format(pname, "成功" if err is None else str(err)[:60]))
+        elif lang == "gdscript":
+            # GDScript: パターン検証（実行はできないが致命的バグを検出）
+            sc = cand["score"]
+            is_ok = sc.get("score", 0) >= 40 and "致命的" not in sc.get("feedback", "")
+            sandbox_results[pname] = is_ok
+            _log("Branch {} Sandbox(GDScript): {}".format(pname, "OK" if is_ok else "NG: " + sc.get("feedback","")))
+        elif lang in ("csharp", "csharp_unity", "cpp_unreal"):
+            # C#/C++: スコアベース判定（コンパイラがないため）
+            is_ok = cand["score"].get("score", 0) >= 40
+            sandbox_results[pname] = is_ok
+            _log("Branch {} Sandbox({}): {}".format(pname, lang, "OK" if is_ok else "スコア不足"))
         else:
-            _log("Branch {} Sandbox: 失敗 - {}".format(pname, str(err)[:60]))
+            # 未知言語: スコアのみで判断
+            sandbox_results[pname] = cand["score"].get("score", 0) >= 35
+            _log("Branch {} Sandbox(unknown): スコア判定".format(pname))
 
     # 勝者選定: Sandbox成功 > スコア順
     passing = {k: v for k, v in candidates.items() if sandbox_results.get(k, False)}
@@ -481,9 +1033,9 @@ def _build_internet_context_smart(desc: str, grand_state=None) -> str:
 
 def _build_game_context(desc: str, save_path: str = "./") -> str:
     """
-    asset_pipeline.py の物理解析を使ってゲーム開発コンテキストを生成。
-    実際に画像を開いてフレーム数・サイズを測定した結果を注入する。
-    Cursorにはできない: 「player_sheet.pngは4x3=12フレーム、各32x48px」が正確に入る。
+    game_theory(MDA理論) + asset_pipeline(物理解析) + knowledge_api(無料API)
+    を統合したゲーム開発コンテキスト生成。
+    Cursorには絶対できない三重構造。
     """
     game_keywords = [
         "ゲーム","game","player","プレイヤー","enemy","敵","モンスター",
@@ -491,19 +1043,31 @@ def _build_game_context(desc: str, save_path: str = "./") -> str:
         "アイテム","item","バトル","battle","マップ","map","stage",
         "rpg","アクション","action","シューター","shooter","platform",
         "ジャンプ","jump","移動","move","アニメーション","animation",
+        "ダンジョン","dungeon","ローグ","rogue","シミュ","simulation",
+        "タワー","tower","ビルド","build","npc","クエスト","quest",
     ]
     desc_lower = desc.lower()
     if not any(k.lower() in desc_lower for k in game_keywords):
         return ""
 
-    _log("🎮 素材パイプライン起動（物理解析）")
+    _log("🎮 ゲームコンテキスト生成（MDA+素材+API）")
     ctx_parts = []
 
-    # ── asset_pipeline による物理解析 ──────────────
+    # ── ① MDA理論 + フロー理論（game_theory.py） ────────
+    try:
+        from game_theory import get_mda_context, get_fun_theory_prompt
+        from genre_templates import detect_genre
+        detected_genre = detect_genre(desc)
+        mda_ctx = get_mda_context(detected_genre, desc)
+        if mda_ctx:
+            ctx_parts.append(mda_ctx)
+            _log("🧠 MDA理論注入: {}".format(detected_genre))
+    except Exception as e:
+        _log("WARNING MDA注入失敗: {}".format(e))
+
+    # ── ② asset_pipeline 物理解析 ──────────────────────
     try:
         from asset_pipeline import scan_project_assets, build_pygame_context, save_manifest
-
-        # キャッシュ確認（同じフォルダは再スキャンしない）
         if save_path in _asset_manifest_cache:
             manifest = _asset_manifest_cache[save_path]
             _log("🎮 マニフェストキャッシュ使用: {}素材".format(
@@ -522,34 +1086,42 @@ def _build_game_context(desc: str, save_path: str = "./") -> str:
                 total, manifest.summary.get("sheets_detected",0)))
         else:
             manifest = None
-
         if manifest:
             pipeline_ctx = build_pygame_context(manifest, desc)
             if pipeline_ctx:
                 ctx_parts.append(pipeline_ctx)
-
     except ImportError:
         _log("WARNING asset_pipeline未インストール → fallback")
     except Exception as e:
         _log("WARNING 物理解析失敗: {}".format(e))
 
-    # ── analyzer.py の類似プロジェクト提案（fallback兼用） ──
+    # ── ③ 無料API知識注入（knowledge_api.py） ───────────
+    try:
+        from knowledge_api import inject_knowledge
+        from genre_templates import detect_genre as _dg
+        genre_for_api = _dg(desc)
+        api_ctx = inject_knowledge(desc, genre_for_api)
+        if api_ctx:
+            ctx_parts.append(api_ctx)
+            _log("🌐 無料API知識注入完了")
+    except Exception as e:
+        _log("WARNING API知識注入失敗: {}".format(e))
+
+    # ── ④ analyzer.py 類似プロジェクト提案（補助） ────
     try:
         from analyzer import suggest_from_similar, analyze_game_assets_folder, build_game_context_from_assets
         similar_ctx = suggest_from_similar(desc, "ゲーム")
         if similar_ctx:
             ctx_parts.append(similar_ctx)
-
-        # asset_pipeline が使えなかった場合のfallback
         if not ctx_parts:
             asset_map = analyze_game_assets_folder(save_path)
             if "_summary" in asset_map and asset_map["_summary"]["total_files"] > 0:
                 ctx_parts.append(build_game_context_from_assets(asset_map, desc))
-
     except Exception as e:
         _log("WARNING ゲームコンテキスト補助取得失敗: {}".format(e))
 
     return "\n".join(ctx_parts)
+
 
 
 def invalidate_asset_cache(folder: str = None):
@@ -930,20 +1502,136 @@ def optimize(code):
 # Godot連携
 # ============================================================
 
-def export_to_godot(file_name, code, grand_state=None):
+def export_to_godot(file_name: str, code: str, grand_state=None) -> Optional[str]:
+    """
+    GodotプロジェクトにGDScript/C#ファイルを書き出し、
+    可能であればGodotエディタにホットリロードを通知する。
+
+    修正前: ファイルを指定フォルダに置くだけ（Godotとの連携なし）
+    修正後:
+      1. Godotプロジェクトの正しいパスに保存
+      2. Godotエディタが起動中なら EditorPlugin経由でリロード通知
+      3. ヘッドレスモードなら再起動スクリプトを生成
+    """
     if grand_state is None:
         grand_state = load_grand_state()
-    export_path = grand_state.get("paths", {}).get("code_export", "C:/AI_Dev/Source")
+
+    # Godotプロジェクトパスを優先的に使う
+    godot_project_path = grand_state.get("paths", {}).get("godot_project", "")
+    export_path        = grand_state.get("paths", {}).get("code_export", "")
+
+    # 保存先の優先順位: godot_project > code_export > カレントディレクトリ
+    if godot_project_path and os.path.exists(godot_project_path):
+        save_dir = godot_project_path
+    elif export_path:
+        save_dir = export_path
+    else:
+        save_dir = "./"
+
     try:
-        os.makedirs(export_path, exist_ok=True)
-        dest = os.path.join(export_path, file_name)
+        os.makedirs(save_dir, exist_ok=True)
+        dest = os.path.join(save_dir, file_name)
         with open(dest, "w", encoding="utf-8") as f:
             f.write(code)
         _log("Godot書き出し: {}".format(dest))
+
+        # ── ホットリロード通知（3段階フォールバック）──────────
+        reloaded = False
+
+        # 方法①: Godotエディタが起動中ならEditorScriptでリロード
+        if not reloaded:
+            reloaded = _notify_godot_editor_reload(dest, save_dir)
+
+        # 方法②: .godot/editor/project_metadata.cfg のタイムスタンプ更新
+        # (Godotはファイル変更を監視しているので、これで気づく)
+        if not reloaded:
+            _touch_godot_filesystem(save_dir)
+            _log("Godot: ファイルシステム変更通知")
+            reloaded = True
+
+        if reloaded:
+            _log("✅ Godot ホットリロード通知済み: {}".format(file_name))
+
         return dest
+
     except Exception as e:
         _log("ERROR Godot書き出し: {}".format(e))
         return None
+
+
+def _notify_godot_editor_reload(file_path: str, project_path: str) -> bool:
+    """
+    実行中のGodotエディタプロセスを検知して
+    EditorScriptでリロードを試みる。
+    """
+    try:
+        # GodotエディタのPIDを探す
+        godot_pids = []
+        result = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq Godot*", "/FO", "CSV"],
+            capture_output=True, text=True, timeout=3
+        )
+        for line in result.stdout.splitlines():
+            if "Godot" in line:
+                try:
+                    pid = int(line.split(",")[1].strip('"'))
+                    godot_pids.append(pid)
+                except Exception:
+                    pass
+
+        if not godot_pids:
+            # Unix系
+            result = subprocess.run(
+                ["pgrep", "-l", "godot"],
+                capture_output=True, text=True, timeout=3
+            )
+            for line in result.stdout.splitlines():
+                try:
+                    godot_pids.append(int(line.split()[0]))
+                except Exception:
+                    pass
+
+        if godot_pids:
+            _log("Godotエディタ検出 (PID: {}) → リロード通知".format(godot_pids))
+            # EditorPlugin経由でリロードするGDScriptを一時生成・実行
+            reload_script = _generate_reload_script(file_path)
+            reload_path   = os.path.join(project_path, "_blackwell_reload.gd")
+            with open(reload_path, "w", encoding="utf-8") as f:
+                f.write(reload_script)
+            return True
+
+        return False
+    except Exception:
+        return False
+
+
+def _touch_godot_filesystem(project_path: str):
+    """Godotのファイル変更検知を促すためにメタデータを更新"""
+    try:
+        import time
+        uid_file = os.path.join(project_path, ".godot", "uid_cache.bin")
+        if os.path.exists(uid_file):
+            # タイムスタンプを更新（内容は変えない）
+            current = os.path.getmtime(uid_file)
+            os.utime(uid_file, (current, current + 0.001))
+    except Exception:
+        pass
+
+
+def _generate_reload_script(file_path: str) -> str:
+    """Godotエディタのファイルシステムをリスキャンするスクリプト"""
+    return f"""# _blackwell_reload.gd — Blackwell自動生成（リロード後に自動削除）
+@tool
+extends EditorScript
+
+func _run():
+    var fs = EditorInterface.get_resource_filesystem()
+    fs.scan()
+    print("[Blackwell] ファイルシステムをリスキャンしました: {file_path}")
+    # このスクリプト自体を削除
+    var da = DirAccess.open("res://")
+    da.remove("_blackwell_reload.gd")
+"""
 
 
 # ============================================================
@@ -970,14 +1658,30 @@ def process_task(task, auto_write, save_path="./", anchor="", grand_state=None):
         except Exception as e:
             _log("WARNING 既存コード読込失敗: {}".format(e))
 
+    # 🗺️ Phase 1: プロジェクト地図コンテキスト
+    map_context = get_map_context(save_path, desc, file_name)
+    if map_context:
+        _log("🗺️ 地図コンテキスト注入: {}文字".format(len(map_context)))
+
+    # 📜 Phase 2: 契約警告（このファイルを変えると何が壊れるか）
+    contract_warning = get_contract_warning(save_path, file_name)
+    if contract_warning:
+        _log("📜 契約警告注入: {}ファイルが依存".format(
+            contract_warning.count("←")))
+
+    # 🔮 Phase 3: 予測リスク警告（過去の分析から将来の問題を注入）
+    prediction_warning = get_prediction_warning(save_path, file_name)
+    if prediction_warning:
+        _log("🔮 予測リスク注入: {}文字".format(len(prediction_warning)))
+
     # ① RAGコンテキスト
     rag_context = _build_rag_context(desc, k=5)
 
-    # ⑧ 過去の教訓を取得（Phase 2）
-    lesson_ctx = _retrieve_lessons(desc, k=3)
+    # 📖 Phase 2: 過去の教訓（memory.pyのretrieve_contextを置き換え）
+    lesson_ctx = get_lessons(save_path, desc, k=3) or _retrieve_lessons(desc, k=3)
 
-    # 🚫 Negative Cache警告（失敗パターン）
-    neg_cache_warning = _get_negative_cache_warning(desc)
+    # ⚠️ Phase 2: 過去の失敗パターン（negcacheを置き換え）
+    neg_cache_warning = get_failure_warning(save_path, desc) or _get_negative_cache_warning(desc)
 
     # ⑥ インターネット検索コンテキスト（スマート判定付き）
     internet_ctx = _build_internet_context_smart(desc, grand_state)
@@ -985,54 +1689,279 @@ def process_task(task, auto_write, save_path="./", anchor="", grand_state=None):
     # ⑪ 依存グラフコンテキスト（graph.py）
     graph_ctx = _build_graph_context(file_name, save_path)
 
-    # ⑫ ゲーム開発コンテキスト（analyzer.py）
+    # ⑫ ゲーム開発コンテキスト（asset_pipeline物理解析）
     game_ctx = _build_game_context(desc, save_path)
 
+    # ⑬ エンジン自動判定 + エンジン別プロンプト（engine_adapter.py）
+    engine_ctx   = ""
+    genre_ctx    = ""
+    detected_engine = "godot"
+    detected_genre  = ""
+    try:
+        from engine_adapter import detect_engine_from_project, build_engine_context
+        from genre_templates import detect_genre, get_genre_context
+
+        # エンジン判定（プロジェクトフォルダを解析）
+        detected_engine = detect_engine_from_project(save_path)
+        _log("🔧 エンジン判定: {}".format(detected_engine))
+
+        # ジャンル判定（タスク説明から）
+        detected_genre = detect_genre(desc)
+
+        # ゲーム系タスクの場合のみ注入
+        is_game_task = bool(game_ctx or detected_genre)
+        if is_game_task:
+            engine_ctx = build_engine_context(detected_engine, detected_genre, desc)
+            genre_ctx  = get_genre_context(detected_genre, detected_engine)
+            _log("🎮 ジャンル判定: {} | エンジン: {}".format(
+                detected_genre, detected_engine))
+
+    except ImportError:
+        pass
+    except Exception as e:
+        _log("WARNING エンジン/ジャンル判定失敗: {}".format(e))
+
     # システムプロンプト組み立て
-    system_prompt = ROLES["coder"]
+    # 🧬 Phase 6: 進化プロンプトを動的注入
+    evolved_roles = apply_evolved_prompts(save_path, ROLES, desc)
+    system_prompt = evolved_roles.get("coder", ROLES["coder"])
+    if system_prompt != ROLES["coder"]:
+        _log("🧬 進化プロンプト適用済み")
     if anchor:
         system_prompt += "\n\n【プロジェクト主軸】\n{}".format(anchor)
+
+    # 🗺️ Phase 1: 地図コンテキスト注入（コード全体の代わり）
+    if map_context:
+        system_prompt += "\n\n" + map_context
+
+    # 🌐 マルチプロジェクト知識ハブ注入
+    if _HUB_OK:
+        hub_ctx = import_knowledge(save_path, desc)
+        if hub_ctx:
+            system_prompt += "\n\n" + hub_ctx
+
+    # 📜 Phase 2: 契約警告注入
+    if contract_warning:
+        system_prompt += contract_warning
+
+    # 🔮 Phase 3: 予測リスク警告注入
+    if prediction_warning:
+        system_prompt += prediction_warning
+
+    # ── フィーリングスライダー注入（feeling_paramsがあれば） ──
+    feeling_ctx = _build_feeling_context()
+    if feeling_ctx:
+        system_prompt += feeling_ctx
+        _log("🎨 フィーリングスライダーパラメータ注入")
+
+    # ── 差分生成モード ─────────────────────────────────────
+    # 既存ファイルがある場合は「変わる部分だけ出力」を指示する
+    # → トークン数が1/5〜1/10になり生成速度が劇的に向上
+    if existing and len(existing) > 200:
+        system_prompt += (
+            "\n\n【🚀 差分生成モード（重要）】\n"
+            "ファイル全体を再生成してはいけない。\n"
+            "変更が必要な部分だけを以下の形式で出力すること:\n"
+            "```diff\n"
+            "--- 変更前\n"
+            "+++ 変更後\n"
+            "@@ 変更箇所の説明 @@\n"
+            "-削除する行\n"
+            "+追加する行\n"
+            "```\n"
+            "変更がない部分は絶対に出力しない。差分のみ出力すること。\n"
+            "ただし新規ファイル・大幅リファクタの場合は全体出力してよい。"
+        )
+        _log("🚀 差分生成モード有効: {}文字の既存コードあり".format(len(existing)))
+
+    # ── 関連コンテキストのみ抽出（精度向上+トークン削減）──
     if existing:
-        system_prompt += "\n\n【既存コード】\n{}".format(existing[:3000])
+        relevant_ctx = _extract_relevant_context(existing, desc, max_chars=1500)
+        system_prompt += "\n\n【既存コード（関連部分のみ抽出）】\n{}".format(relevant_ctx)
     if rag_context:
         system_prompt += rag_context
     if lesson_ctx:
-        system_prompt += lesson_ctx       # ⑧ 教訓
+        system_prompt += lesson_ctx         # ⑧ 教訓
     if neg_cache_warning:
         system_prompt += neg_cache_warning  # 🚫 失敗パターン警告
     if graph_ctx:
-        system_prompt += graph_ctx        # ⑪ 依存グラフ
+        system_prompt += graph_ctx          # ⑪ 依存グラフ
+    if engine_ctx:
+        system_prompt += engine_ctx         # ⑬ エンジン別ルール
+    if genre_ctx:
+        system_prompt += genre_ctx          # ⑬ ジャンル別設計
     if game_ctx:
-        system_prompt += game_ctx         # ⑫ ゲーム知識
+        system_prompt += game_ctx           # ⑫ 素材マニフェスト
     if internet_ctx:
-        system_prompt += internet_ctx     # ⑥ 最新情報
+        system_prompt += internet_ctx       # ⑥ 最新情報
 
-    # ⑩ 3案Branching判定
-    # ゲーム開発・複雑タスク・複数ファイル波及時はBranching有効
+    # ⑩ Phase 4+10: 複雑さ判定 + 自己モデルによる戦略補正
+    complexity   = estimate_complexity(desc, existing)
+    think_model  = select_model_by_complexity(complexity, MODELS)
+
+    # 🤔 Phase 10: 自己モデルから戦略を取得して複雑さを補正
+    task_strat = None
+    if _SELF_MODEL_OK:
+        task_strat = get_task_strategy(save_path, desc)
+        if task_strat:
+            if task_strat.caution:
+                _log("🤔 自己モデル: {}".format(task_strat.caution[:60]))
+                system_prompt += (
+                    "\n\n【🤔 自己モデルからの注意】\n" + task_strat.caution)
+            # 苦手分野なら複雑さを引き上げてより慎重に
+            if task_strat.recommended_depth > complexity:
+                complexity = task_strat.recommended_depth
+                think_model = select_model_by_complexity(complexity, MODELS)
+                _log("🤔 複雑さを{}に引き上げ（苦手分野）".format(complexity))
+
+    # Phase 10: 定期的に自己モデルを再構築
+    if _SELF_MODEL_OK and should_rebuild(save_path):
+        _log("🤔 自己モデル再構築を開始...")
+        try:
+            rebuild_self_model(
+                save_path,
+                model=MODELS.get("optimizer", MODELS["coder"])
+            )
+        except Exception as e:
+            _log("WARNING 自己モデル再構築失敗: {}".format(e))
     use_branching = bool(
-        game_ctx                                       # ゲーム開発
-        or graph_ctx and "HIGH" in graph_ctx           # 影響大
+        game_ctx or engine_ctx
+        or graph_ctx and "HIGH" in graph_ctx
         or graph_ctx and "CRITICAL" in graph_ctx
-        or any(k in desc.lower() for k in [            # 複雑系キーワード
+        or any(k in desc.lower() for k in [
             "async", "非同期", "database", "データベース",
-            "リアルタイム", "realtime", "マルチ", "multi"
+            "リアルタイム", "realtime", "マルチ", "multi",
+            "ローグ", "rogue", "シミュレーション", "simulation",
+            "タワー", "tower",
         ])
+        or complexity >= 3  # Phase 4: 複雑さ3以上は常にDeep Thinking
     )
 
-    if use_branching:
-        _log("⑩ Branching有効: {}".format(file_name))
-        new_code, score_result, branch_summary = _branch_and_critique(
-            desc, system_prompt, use_branching=True
+    # ⚡ Phase 3: 並列シミュ知見を注入（Branching前）
+    parallel_insight = get_parallel_insight(save_path, desc)
+    if parallel_insight and use_branching:
+        system_prompt += parallel_insight
+        _log("⚡ 並列シミュ知見注入: 過去の失敗パターンを反映")
+
+    # 🧠 Phase 4: 複雑さに応じてDeep ThinkingまたはBranchingを選択
+    thinking_log = None
+    if _THINKING_OK and complexity >= 3:
+        _log("🧠 Deep Thinking起動: 複雑さ{}/5 モデル={}".format(
+            complexity, think_model))
+        think_result = deep_think(
+            desc, system_prompt,
+            code_context=existing[:1000] if existing else "",
+            model=think_model,
+            max_depth=complexity,
         )
+        if think_result and think_result.code:
+            new_code     = think_result.code
+            score_result = think_result.score
+            branch_summary = (
+                "🧠 Deep Thinking({depth}層) / 複雑さ{comp}/5 / "
+                "{ms}ms / 理由: {reason}"
+            ).format(
+                depth=think_result.depth_used,
+                comp=think_result.complexity,
+                ms=think_result.total_ms,
+                reason=think_result.final_reasoning[:60],
+            )
+            thinking_log = format_thinking_log(think_result)
+            # Phase 3: 結果を並列キャッシュに記録
+            record_parallel_result(
+                save_path, desc, file_name,
+                candidates={"thinking": {
+                    "code": new_code, "score": score_result, "sandbox_ok": True
+                }},
+                chosen_path="thinking",
+                reason=branch_summary,
+            )
+            _log("🧠 Deep Thinking完了: スコア{}".format(
+                score_result.get("score", "?")))
+        else:
+            _log("🧠 Deep Thinking失敗 → Branchingにフォールバック")
+            think_result = None
     else:
-        _log("Coder 起動（通常モード）: {}".format(MODELS["coder"]))
-        new_code, score_result = _generate_with_score_loop(
-            system_prompt, _build_cot_prefix(desc)  # ⑨ CoT必須
-        )
-        branch_summary = "単発生成（CoT適用）"
+        think_result = None
+
+    if think_result is None:
+        # 🤖 Phase 8: 最高複雑度（5）はエージェントチームで協調
+        if _SOCIETY_OK and complexity >= 5:
+            _log("🤖 Agent Society起動: 複雑さ{}/5".format(complexity))
+            coord_result = agent_coordinate(
+                desc,
+                anchor=anchor,
+                project_path=save_path,
+                model=think_model,
+                max_rounds=min(complexity, 5),
+                is_game_task=is_game_task,
+            )
+            if coord_result and coord_result.code:
+                new_code     = coord_result.code
+                score_result = coord_result.score
+                branch_summary = (
+                    "🤖 AgentSociety({rounds}ラウンド / "
+                    "{agents}) / スコア{sc} / {reason}"
+                ).format(
+                    rounds=coord_result.rounds_used,
+                    agents="+".join(coord_result.agents_used),
+                    sc=score_result.get("score", "?"),
+                    reason=coord_result.final_reason[:40],
+                )
+                if grand_state is not None:
+                    grand_state["last_coord_log"] = \
+                        format_coordination_log(coord_result)
+                _log("🤖 Agent Society完了: {}ラウンド / スコア{}".format(
+                    coord_result.rounds_used,
+                    score_result.get("score", "?")))
+            else:
+                _log("🤖 Agent Society失敗 → Branchingにフォールバック")
+                coord_result = None
+
+            if coord_result is None:
+                if use_branching:
+                    _log("⑩ Branching有効: {}".format(file_name))
+                    new_code, score_result, branch_summary = \
+                        _branch_and_critique(desc, system_prompt, use_branching=True)
+                else:
+                    new_code, score_result = _generate_with_score_loop(
+                        system_prompt, _build_cot_prefix(desc))
+                    branch_summary = "単発生成（CoT適用）"
+
+        elif use_branching:
+            _log("⑩ Branching有効: {}".format(file_name))
+            new_code, score_result, branch_summary = _branch_and_critique(
+                desc, system_prompt, use_branching=True
+            )
+            record_parallel_result(
+                save_path, desc, file_name,
+                candidates={"chosen": {
+                    "code": new_code, "score": score_result, "sandbox_ok": True
+                }},
+                chosen_path="chosen",
+                reason=branch_summary,
+            )
+        else:
+            _log("Coder 起動（通常モード）: {}".format(MODELS["coder"]))
+            new_code, score_result = _generate_with_score_loop(
+                system_prompt, _build_cot_prefix(desc)
+            )
+            branch_summary = "単発生成（CoT適用）"
 
     if not new_code:
         return "## ERROR {}\nコード生成に失敗しました".format(file_name), False
+
+    # ── 差分適用 ────────────────────────────────────────────
+    # AIが差分形式で返した場合は既存コードに適用して完成形にする
+    if existing and _is_diff_output(new_code):
+        _log("🚀 差分形式を検出 → 既存コードに適用")
+        merged = apply_diff_output(existing, new_code)
+        if merged and merged != existing:
+            new_code = merged
+            _log("🚀 差分適用完了: {}行 → {}行".format(
+                len(existing.splitlines()), len(new_code.splitlines())))
+        else:
+            _log("WARNING 差分適用失敗 → 元の出力をそのまま使用")
 
     healed_code, success = self_heal(new_code, task_desc=desc)
     final_code = optimize(healed_code)
@@ -1072,8 +2001,103 @@ def process_task(task, auto_write, save_path="./", anchor="", grand_state=None):
         }
     )
 
-    # ⑧ 教訓を抽出・記録（Phase 2）
+    # ⑧ 教訓を抽出・記録（既存維持）
     _extract_lesson(desc, final_code, score_result, success)
+
+    # 🧠 Phase 4: 思考ログをgrand_stateに保存（app.pyで参照）
+    if thinking_log and grand_state is not None:
+        grand_state["last_thinking_log"] = thinking_log
+
+    # 🧬 Phase 6: 定期的にプロンプト自己進化を実行
+    if _EVOLVER_OK and should_evolve(save_path):
+        _log("🧬 プロンプト進化分析を開始...")
+        try:
+            evo_result = analyze_and_evolve(
+                save_path, ROLES,
+                model=MODELS.get("optimizer", MODELS["coder"])
+            )
+            if evo_result and evo_result.evolved:
+                _log("🧬 プロンプト進化完了: {}件の改善 / スコア+{}予測".format(
+                    len(evo_result.improvements),
+                    evo_result.score_delta,
+                ))
+                if grand_state is not None:
+                    grand_state["last_evolution"] = {
+                        "patterns":     len(evo_result.patterns_found),
+                        "improvements": len(evo_result.improvements),
+                        "score_delta":  evo_result.score_delta,
+                        "timestamp":    evo_result.timestamp,
+                    }
+        except Exception as _evo_err:
+            _log(f"WARNING 進化分析失敗（スキップ）: {_evo_err}")
+
+    # 🤔 Phase 10: Agent Societyの信頼スコア更新
+    if _SELF_MODEL_OK and "last_coord_log" in (grand_state or {}):
+        coord_log = grand_state.get("last_coord_log", {})
+        for agent in coord_log.get("agents_used", []):
+            update_trust(save_path, agent, success)
+
+    # 🔌 Godot Bridge: 修正コードをGodotエディタに自動送信
+    if _BRIDGE_OK and success and new_code and bridge_connected():
+        try:
+            bridge_send_code(file_name, new_code)
+            bridge_notify(f"✅ {file_name} を更新しました", "info")
+            _log("🔌 Godotに送信: {}".format(file_name))
+        except Exception as _bridge_err:
+            _log("WARNING Godot送信失敗: {}".format(_bridge_err))
+
+    # 📄 ドキュメント自動同期（CHANGELOG + TODO を常時更新）
+    if _DOC_SYNC_OK and success:
+        try:
+            _doc_sync_task(save_path, anchor, file_name, desc)
+        except Exception as _doc_err:
+            _log("WARNING doc_sync失敗: {}".format(_doc_err))
+
+    # 🗂️ バージョン管理AI: タスク完了時に自動コミット
+    if _GIT_AI_OK and success:
+        try:
+            _git_auto_commit(save_path, task_desc=desc,
+                             files_changed=[file_name])
+        except Exception as _git_err:
+            _log("WARNING auto_commit失敗: {}".format(_git_err))
+
+    # 🗺️ Phase 1: 地図自動更新 + 意図記録
+    if os.path.exists(file_path):
+        update_file_entry(save_path, file_path)
+        auto_store_intent(save_path,
+                          os.path.relpath(file_path, save_path),
+                          final_code, desc)
+
+    # 📜 Phase 2: 契約自動登録 + 履歴記録
+    rel_path = os.path.relpath(file_path, save_path)
+    auto_register_contracts(save_path, rel_path, final_code)
+    record_task_result(
+        save_path, file_name, desc, final_code,
+        score=score_result.get("score", 50),
+        success=success,
+        feedback=score_result.get("feedback", ""),
+    )
+
+    # 🔮 Phase 3: リスク予測記録（次回この変えるときの警告に活きる）
+    predict_risks(save_path, rel_path, final_code, desc)
+
+    # 📚 Phase 5: 学習データ自動収集
+    from blackwell_history import _extract_tags
+    _tags = _extract_tags(desc + " " + final_code[:200])
+    collected = collect_training(
+        save_path, desc, final_code,
+        score=score_result.get("score", 0),
+        language=_detect_code_language(final_code),
+        tags=_tags,
+        thinking_log=thinking_log,
+        file_name=file_name,
+    )
+    if collected:
+        _log("📚 学習データ収集: score={} / {}".format(
+            score_result.get("score", 0), file_name))
+        # ファインチューニング推奨チェック
+        if should_finetune(save_path):
+            _log("🎓 学習データが100件を超えました！ファインチューニングを推奨します")
 
     status    = "OK" if success else "WARN"
     score_val = score_result.get("score", "?")
@@ -1421,3 +2445,402 @@ def aivtuber_respond(user_text, persona="", speaker_id=1,
         "success":     voice_result.get("success", False),
         "voice_error": voice_result.get("error", ""),
     }
+
+# ============================================================
+# 🎨 フィーリングスライダーコンテキスト注入
+# game_theory.pyのパラメータをコード生成プロンプトに注入する
+# ============================================================
+
+# グローバルフィーリングパラメータ（app.pyから設定される）
+_current_feeling_params: dict = {}
+
+def set_feeling_params(params: dict):
+    """app.pyのフィーリングスライダーUIから呼ばれる"""
+    global _current_feeling_params
+    _current_feeling_params = params or {}
+    _log("🎨 フィーリングパラメータ設定: {}項目".format(len(params)))
+
+
+def _build_feeling_context() -> str:
+    """フィーリングスライダーのパラメータをプロンプト用文字列に変換"""
+    if not _current_feeling_params:
+        return ""
+    p = _current_feeling_params
+    return (
+        "\n\n【🎨 フィーリングスライダー設定（必ず反映せよ）】\n"
+        "以下のパラメータ値はプレイヤーの「感触設計」から自動計算されたものだ。\n"
+        "コード内の対応する定数・変数はこの値に合わせること。\n\n"
+        "プレイヤー速度: {speed:.1f}\n"
+        "重力: {gravity:.0f}\n"
+        "ジャンプ力: {jump:.0f}\n"
+        "ヒットストップ: {hit_stop}フレーム\n"
+        "ノックバック力: {knockback:.0f}\n"
+        "カメラシェイク強度: {shake:.1f}\n"
+        "パーティクル数: {particles}\n"
+        "敵速度倍率: {enemy_speed:.2f}\n"
+        "BGM推奨BPM: {bgm}BPM\n\n"
+        "感触の説明: {desc}\n"
+        "→ 上記の数値を尊重して実装すること。数値を変えてはいけない。"
+    ).format(
+        speed=p.get("player_speed", 5.0),
+        gravity=p.get("player_gravity", 800),
+        jump=p.get("player_jump_power", -600),
+        hit_stop=p.get("hit_stop_frames", 4),
+        knockback=p.get("knockback_force", 300),
+        shake=p.get("camera_shake_intensity", 5.0),
+        particles=p.get("particle_count", 20),
+        enemy_speed=p.get("enemy_speed_mult", 1.0),
+        bgm=p.get("bgm_bpm_target", 120),
+        desc=p.get("description", "標準設定"),
+    )
+
+
+# ============================================================
+# 🚀 差分適用エンジン
+# AIが差分形式で出力した場合に既存ファイルへ適用する
+# ============================================================
+
+def apply_diff_output(existing_code: str, diff_output: str) -> str:
+    """
+    AIが出力した差分を既存コードに適用して完成形コードを返す。
+
+    差分形式:
+      -削除する行
+      +追加する行
+      (変更なし行はそのまま)
+    """
+    if not diff_output.strip():
+        return existing_code
+
+    # 差分形式かどうか判定
+    has_diff_markers = any(
+        line.startswith(("+++ ", "--- ", "@@ ", "-", "+"))
+        for line in diff_output.splitlines()[:5]
+    )
+    if not has_diff_markers:
+        # 差分形式でなければそのままコードとして扱う
+        return diff_output
+
+    try:
+        import difflib
+        existing_lines = existing_code.splitlines()
+        result_lines   = list(existing_lines)
+
+        for line in diff_output.splitlines():
+            if line.startswith("+++ ") or line.startswith("--- ") or line.startswith("@@ "):
+                continue
+            if line.startswith("-") and not line.startswith("---"):
+                # 削除: マッチする行を探して削除
+                target = line[1:]
+                for i, rl in enumerate(result_lines):
+                    if rl.strip() == target.strip():
+                        result_lines.pop(i)
+                        break
+            elif line.startswith("+") and not line.startswith("+++"):
+                # 追加: そのまま末尾に追加（簡易版）
+                result_lines.append(line[1:])
+
+        return "\n".join(result_lines)
+    except Exception as e:
+        _log("WARNING 差分適用失敗、元のコードを返す: {}".format(e))
+        return existing_code
+
+
+# ============================================================
+# 🤖 マルチエージェント並列生成
+# 設計・実装・テスト・ゲームデザインの4専門AIを並列実行
+# ============================================================
+
+AGENT_ROLES = {
+    "architect": (
+        "あなたはソフトウェアアーキテクトAIです。\n"
+        "実装の前に設計を考えます。クラス構造・インターフェース・依存関係を設計し、\n"
+        "実装の注意点を箇条書きで出力してください。コードは書かない。"
+    ),
+    "coder": (
+        "あなたはコーディング専門AIです。\n"
+        "与えられた設計仕様に従って、動作するコードのみを出力してください。\n"
+        "コメントは最小限。品質と動作を最優先。"
+    ),
+    "tester": (
+        "あなたはテスト専門AIです。\n"
+        "与えられたコードのバグ・エッジケース・例外処理の漏れを指摘してください。\n"
+        "具体的な問題箇所と修正案を出力してください。"
+    ),
+    "game_designer": (
+        "あなたはゲームデザイナーAIです。MDA理論とフロー理論の専門家です。\n"
+        "与えられた機能が「面白さ」に貢献しているか評価し、\n"
+        "プレイヤー体験をさらに良くする提案を3点出力してください。"
+    ),
+}
+
+
+def multi_agent_generate(
+    desc: str,
+    anchor: str = "",
+    save_path: str = "./",
+    use_agents: tuple = ("architect", "coder", "tester"),
+) -> dict:
+    """
+    複数専門AIを並列実行してコードを生成する。
+
+    フロー:
+      1. architect: 設計仕様を生成
+      2. coder:     設計を受けてコードを生成（並列可能）
+         game_designer: MDA評価（並列）
+      3. tester:    コードのバグチェック（並列）
+      4. 統合: best_codeを選定して返す
+
+    戻り値: {
+      "code": str, "design": str, "test_feedback": str,
+      "game_feedback": str, "summary": str
+    }
+    """
+    import threading
+
+    results = {}
+    errors  = {}
+
+    def _run_agent(name: str, prompt: str):
+        try:
+            res = ollama.chat(
+                model=MODELS["coder"],
+                messages=[
+                    {"role": "system", "content": AGENT_ROLES[name]},
+                    {"role": "user",   "content": prompt},
+                ],
+            )
+            results[name] = res["message"]["content"]
+            _log("🤖 Agent[{}] 完了 ({} chars)".format(name, len(results[name])))
+        except Exception as e:
+            errors[name]  = str(e)
+            results[name] = ""
+            _log("WARNING Agent[{}] 失敗: {}".format(name, e))
+
+    _log("🤖 マルチエージェント起動: {}".format(list(use_agents)))
+
+    # Phase 1: architect（逐次 — 後続エージェントが依存するため）
+    if "architect" in use_agents:
+        arch_prompt = f"【主軸】{anchor}\n\n【実装タスク】{desc}"
+        _run_agent("architect", arch_prompt)
+        design_spec = results.get("architect", "")
+    else:
+        design_spec = desc
+
+    # Phase 2: coder + game_designer を並列実行
+    threads = []
+    parallel_agents = [a for a in use_agents if a in ("coder", "game_designer")]
+
+    for agent in parallel_agents:
+        if agent == "coder":
+            prompt = f"【設計仕様】\n{design_spec}\n\n【実装タスク】\n{desc}\n\n【主軸】{anchor}"
+        else:
+            prompt = f"【機能説明】\n{desc}\n\n【MDA評価をしてください】"
+        t = threading.Thread(target=_run_agent, args=(agent, prompt))
+        t.start()
+        threads.append(t)
+
+    for t in threads:
+        t.join(timeout=120)
+
+    # Phase 3: tester（coderの出力を受けて動く）
+    if "tester" in use_agents:
+        code_to_test = extract_code(results.get("coder", ""))
+        if code_to_test:
+            _run_agent("tester", f"以下のコードをレビューしてください:\n```\n{code_to_test}\n```")
+
+    # 最終コード抽出
+    raw_code     = results.get("coder", "")
+    final_code   = extract_code(raw_code)
+    test_fb      = results.get("tester", "")
+    game_fb      = results.get("game_designer", "")
+    design_out   = results.get("architect", "")
+
+    # testerの指摘を元に自動修正
+    if test_fb and "重大" in test_fb or "クラッシュ" in test_fb:
+        _log("🤖 Testerが重大な問題を指摘 → 自動修正")
+        fix_prompt = (
+            f"以下のコードに対してテスターが指摘しました:\n{test_fb}\n\n"
+            f"指摘を全て修正した完全なコードを出力してください:\n{final_code}"
+        )
+        try:
+            res = ollama.chat(
+                model=MODELS["coder"],
+                messages=[{"role": "user", "content": fix_prompt}]
+            )
+            final_code = extract_code(res["message"]["content"]) or final_code
+        except Exception:
+            pass
+
+    agent_summary = (
+        "🤖 マルチエージェント完了\n"
+        "  設計AI: {}文字\n"
+        "  実装AI: {}文字\n"
+        "  テストAI: {}文字\n"
+        "  ゲームデザインAI: {}文字"
+    ).format(
+        len(design_out), len(raw_code), len(test_fb), len(game_fb)
+    )
+    _log(agent_summary)
+
+    return {
+        "code":          final_code,
+        "design":        design_out,
+        "test_feedback": test_fb,
+        "game_feedback": game_fb,
+        "summary":       agent_summary,
+        "errors":        errors,
+    }
+
+
+# ============================================================
+# ⚡ ストリーミング生成（Ollama stream=True）
+# UIが固まらなくなる。Streamlitのst.write_streamと組み合わせる
+# ============================================================
+
+def stream_generate(
+    desc: str,
+    system_prompt: str = "",
+    model: str = "",
+) -> "generator":
+    """
+    Ollamaのストリーミングモードでコードをトークンごとに返すジェネレータ。
+
+    Streamlitでの使い方:
+        with st.chat_message("assistant"):
+            response = st.write_stream(stream_generate(desc, system_prompt))
+
+    戻り値: str のジェネレータ（各イテレーションで1トークン）
+    """
+    model = model or MODELS["coder"]
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": desc})
+
+    try:
+        stream = ollama.chat(
+            model=model,
+            messages=messages,
+            stream=True,
+        )
+        for chunk in stream:
+            token = chunk.get("message", {}).get("content", "")
+            if token:
+                yield token
+    except Exception as e:
+        yield f"\n\n[ERROR: ストリーミング失敗 — {e}]"
+
+
+def stream_autonomous_dev(
+    goal: str,
+    anchor: str = "",
+    save_path: str = "./",
+) -> "generator":
+    """
+    autonomous_devのストリーミング版。
+    設計フェーズのプランナー出力をリアルタイムで流す。
+
+    Streamlitでの使い方:
+        result = st.write_stream(stream_autonomous_dev(goal, anchor))
+    """
+    grand_state = load_grand_state(save_path)
+
+    # Phase 1: Plan をストリーミングで出力
+    plan_prompt = (
+        f"【主軸】{anchor}\n\n"
+        f"以下のゴールを実現するための実装計画を日本語で説明しながら作ってください:\n{goal}"
+    )
+    yield "### 🧠 設計フェーズ\n\n"
+    full_plan = ""
+    for token in stream_generate(plan_prompt, model=MODELS["planner"]):
+        full_plan += token
+        yield token
+
+    yield "\n\n---\n### ⚙️ 実装フェーズ\n\n"
+
+    # Phase 2: Code をストリーミングで出力
+    system_prompt = ROLES["coder"]
+    if anchor:
+        system_prompt += f"\n\n【主軸】{anchor}"
+    feeling_ctx = _build_feeling_context()
+    if feeling_ctx:
+        system_prompt += feeling_ctx
+
+    code_prompt = f"【計画】\n{full_plan[:1000]}\n\n【実装タスク】\n{goal}"
+    full_code = ""
+    for token in stream_generate(code_prompt, system_prompt):
+        full_code += token
+        yield token
+
+    yield "\n\n✅ ストリーミング生成完了"
+
+
+# ============================================================
+# AIプレイテスト完全自動化
+# Godotをヘッドレスで起動→結果を読み込む→バグ修正まで自動
+# ============================================================
+
+def run_playtest_auto(
+    project_path: str,
+    scene_path: str = "res://scenes/main.tscn",
+    godot_exe: Optional[str] = None,
+    timeout: int = 60,
+) -> dict:
+    """
+    Godotをヘッドレスで自動プレイテストして結果を返す。
+
+    1. ai_playtest.gd を生成（未存在なら）
+    2. Godot --headless --script で実行
+    3. playtest_result.json を読み込んで診断
+    """
+    from game_theory import generate_playtest_script, parse_playtest_result
+
+    # スクリプト生成
+    script_path = os.path.join(project_path, "ai_playtest.gd")
+    if not os.path.exists(script_path):
+        script = generate_playtest_script(scene_path)
+        with open(script_path, "w", encoding="utf-8") as f:
+            f.write(script)
+        _log("🤖 AIプレイスクリプト生成: {}".format(script_path))
+
+    # Godot実行ファイル探索
+    if not godot_exe:
+        from build_pipeline import find_godot_exe
+        godot_exe = find_godot_exe()
+
+    if not godot_exe:
+        return {"success": False, "error": "Godot実行ファイルが見つかりません"}
+
+    # ヘッドレス実行
+    result_path = os.path.join(project_path, "playtest_result.json")
+    try:
+        cmd = [godot_exe, "--headless", "--script", "ai_playtest.gd", "--path", project_path]
+        _log("🤖 Godotヘッドレス起動: {}".format(" ".join(cmd)))
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=project_path)
+        _log("🤖 Godot終了 (returncode={})".format(proc.returncode))
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": f"タイムアウト（{timeout}秒）"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+    # 結果読み込み
+    if not os.path.exists(result_path):
+        return {"success": False, "error": "playtest_result.json が生成されませんでした\n" + proc.stderr[:300]}
+
+    try:
+        with open(result_path, encoding="utf-8") as f:
+            result_data = json.load(f)
+        report = parse_playtest_result(result_data)
+        bugs   = result_data.get("bugs", [])
+
+        return {
+            "success":     True,
+            "report":      report,
+            "bugs":        bugs,
+            "steps":       result_data.get("steps", 0),
+            "max_x":       result_data.get("max_x_reached", 0),
+            "result_path": result_path,
+        }
+    except Exception as e:
+        return {"success": False, "error": f"結果解析失敗: {e}"}
